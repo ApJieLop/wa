@@ -1,0 +1,118 @@
+* { margin: 0; padding: 0; }
+body { font-family: "Microsoft Yahei"; font-size: 12px; color: #888; }
+a, a:hover { color: #888; text-decoration: none; }
+ul, li { list-style: none; }
+
+.calendar {
+  display: none;
+  width: 30%;
+  background-color: #fff;
+  border-radius: .06rem;
+  float: left;
+}
+.calendar-title {
+  position: relative;
+  height: .3rem;
+  line-height: .3rem;
+  padding: .1rem 0;
+}
+.calendar-title a.title {
+  display: inline-block;
+  font-size: .26rem;
+  text-indent: .1rem;
+}
+#backToday {
+  position: absolute;
+  left: .1rem;
+  top: .08rem;
+  width: .4rem;
+  height: .4rem;
+  line-height: .4rem;
+  text-align: center;
+  border-radius: 50%;
+  color: #fff;
+  background-color: #2cb4df;
+  font-size: .18rem;
+}
+.calendar-title .arrow {
+  position: absolute;
+  top: .1rem;
+  right: .1rem;
+  width: .5rem;
+}
+.calendar-title .arrow span {
+  color: #ddd;
+  font-size: .26rem;
+  cursor: pointer;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.calendar-title .arrow span:hover {
+  color: #888;
+}
+.calendar-title .arrow-prev {
+  float: left;
+}
+.calendar-title .arrow-next {
+  float: right;
+}
+.calendar-week,
+.calendar-date {
+  overflow: hidden;
+}
+.calendar-week .item,
+.calendar-date .item {
+  float: left;
+  width: 14.2%;
+  height: .4rem;
+  line-height: .4rem;
+  text-align: center;
+}
+.calendar-week {
+  padding-bottom: .06rem;
+  border-bottom: 1px solid #2cb4df;
+  font-weight: bold;
+  font-size: .16rem;
+}
+/* .calendar-date {} */
+.calendar-date .item {
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .14rem;
+}
+.calendar-date .item-curMonth {
+  color: #333;
+}
+.calendar-date .item-curDay {
+  color: #2cb4df;
+}
+.calendar-today {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  right: .2rem;
+  top: .2rem;
+  width: .9rem;
+  height: .48rem;
+  padding: .06rem .1rem;
+  background-color: #2cb4df;
+  border-radius: .05rem;
+}
+.calendar-today .triangle {
+  position: absolute;
+  top: 50%;
+  left: -.16rem;
+  margin-top: -.08rem;
+  border-width: .08rem;
+  border-style: solid;
+  border-color: transparent #2cb4df transparent transparent;
+}
+.calendar-today p {
+  color: #fff;
+  font-size: .14rem;
+  line-height: .24rem;
+}
