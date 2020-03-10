@@ -76,7 +76,7 @@ export default {
       navigation2: [
         {
           img: require("../../public/static/images/z3.png"),
-          text: "测评题目",
+          text: "测评答题",
           path: "/evaluationSubject"
         },
         {
@@ -91,7 +91,7 @@ export default {
         },
         {
           img: require("../../public/static/images/z2.png"),
-          text: "课程管理",
+          text: "课程签到",
           path: "/curriculumAdministration"
         }
       ]

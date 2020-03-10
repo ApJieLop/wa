@@ -1,23 +1,23 @@
 <template>
-  <!-- 课时管理 - 学员 -->
+  <!-- 课程签到 -->
   <div class="curriculumAdministration">
     <!-- tap -->
     <el-tabs v-model="activeName">
-      <el-tab-pane label="课程绑定" name="curriculumAdministration">
-      <!-- 检索 -->
-      <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="课程名称" prop="name1">
-          <el-input v-model="ruleForm.name1"></el-input>
-        </el-form-item>
-        <el-form-item label="客户名称" prop="name2">
-          <el-input v-model="ruleForm.name2"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
-      <!-- 列表 -->
+      <el-tab-pane label="课程签到" name="curriculumAdministration">
+        <!-- 检索 -->
+        <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="课程名称" prop="name1">
+            <el-input v-model="ruleForm.name1" placeholder="请输入课程名称"></el-input>
+          </el-form-item>
+          <el-form-item label="客户名称" prop="name2">
+            <el-input v-model="ruleForm.name2" placeholder="请输入客户名称"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <!-- 列表 -->
         <el-table :data="tableData" stripe style="width: 100%">
           <el-table-column show-overflow-tooltip align="center" label="序号" min-width="40">
             <template slot-scope="scope">{{ scope.$index+1 }}</template>
@@ -78,16 +78,16 @@
     ></el-pagination>
     <!-- dialog -->
     <el-dialog title="课程签到" :visible.sync="dialogVisible2" width="60%">
-     <el-radio-group v-model="informantType" style="text-align: left;">
-            <el-radio
-            style="width: 45%;height: .4rem;text-align: center;"
-              v-for="item in informantTypeData"
-              :key="item.id"
-              :value="item.id"
-              :label="item.id"
-            >{{item.title}}</el-radio>
-          </el-radio-group>
-      <span slot="footer" class="dialog-footer">    
+      <el-radio-group v-model="informantType" style="text-align: left;">
+        <el-radio
+          style="width: 45%;height: .4rem;text-align: center;"
+          v-for="item in informantTypeData"
+          :key="item.id"
+          :value="item.id"
+          :label="item.id"
+        >{{item.title}}</el-radio>
+      </el-radio-group>
+      <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
         <el-button type="primary" @click="curriculumDetermine">确 定</el-button>
       </span>
@@ -103,51 +103,63 @@ export default {
       // 当前的tap
       activeName: "curriculumAdministration",
       // 选中当前列表的id
-      zid:"",
+      zid: "",
       // 检索内容
       ruleForm: {
         name1: "",
         name2: ""
       },
       // 课程签到
-      informantType: '',
-      informantTypeData: [{
+      informantType: "",
+      informantTypeData: [
+        {
           id: 1,
           title: "存在欺诈骗钱行为"
-        },{
+        },
+        {
           id: 2,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 3,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 4,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 5,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 6,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 7,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 8,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 9,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 10,
           title: "存在欺诈骗钱行为"
-        }, {
+        },
+        {
           id: 11,
           title: "存在欺诈骗钱行为"
-        },{
+        },
+        {
           id: 12,
           title: "存在欺诈骗钱行为"
-        },
+        }
       ],
       // 列表数据
       tableData: [
@@ -225,7 +237,7 @@ export default {
       this.createdData(val, this.fenYe.size);
     },
     // 获取所有课程
-    getCurriculum(){
+    getCurriculum() {
       let type = "";
       let url = "";
       let data = {};
@@ -236,15 +248,15 @@ export default {
       });
     },
     // 课程签到
-    signIn(row){
-        this.dialogVisible2 = true;
-        this.zid = row.id;
-        console.log(this.zid)
+    signIn(row) {
+      this.dialogVisible2 = true;
+      this.zid = row.id;
+      console.log(this.zid);
     },
     // 课程签到 - 确定
     curriculumDetermine() {
       this.dialogVisible2 = false;
-      console.log(this.informantType)
+      console.log(this.informantType);
     },
     // 初始化列表数据
     createdData(page, pages) {

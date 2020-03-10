@@ -6,37 +6,37 @@
     <!-- tap -->
     <el-tabs v-model="activeName">
       <el-tab-pane label="课程管理" name="scurriculumAdministration">
-      <!-- 检索 -->
-      <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="课程名称" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
-      <!-- 列表 -->
+        <!-- 检索 -->
+        <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="课程名称" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入课程名称"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <!-- 列表 -->
         <el-table :data="tableData" stripe style="width: 100%">
           <el-table-column show-overflow-tooltip align="center" label="序号" min-width="40">
             <template slot-scope="scope">{{ scope.$index+1 }}</template>
           </el-table-column>
           <el-table-column
-            prop="a"
+            prop="lesson_name"
             show-overflow-tooltip
             align="center"
             label="课程名称"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="b"
+            prop="lesson_time"
             show-overflow-tooltip
             align="center"
             label="课时"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="c"
+            prop="create_time"
             show-overflow-tooltip
             align="center"
             label="创建时间"
@@ -53,12 +53,9 @@
     </el-tabs>
     <!-- 分页 -->
     <el-pagination
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page.sync="fenYe.currentPage"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="fenYe.size"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="total, prev, pager, next, jumper"
       :total="fenYe.total"
     ></el-pagination>
     <!-- dialog -->
@@ -75,10 +72,10 @@
         width: 90%;"
       >
         <el-form-item label="课程名称" prop="name" style="width:4rem;">
-          <el-input v-model="addData.name"></el-input>
+          <el-input v-model="addData.name" placeholder="请输入课程名称"></el-input>
         </el-form-item>
         <el-form-item label="课程周期" prop="cycle" style="width:4rem;">
-          <el-input v-model="addData.cycle"></el-input>
+          <el-input v-model="addData.cycle" placeholder="请输入课程周期"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -98,7 +95,7 @@ export default {
       activeName: "scurriculumAdministration",
       // 检索内容
       ruleForm: {
-        name: "",
+        name: ""
       },
       // 新建老师
       addData: {
@@ -108,93 +105,68 @@ export default {
       // 建新老师 - 数据校验
       rules: {
         name: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
-        cycle: [{ required: true, message: "请输入手机少", trigger: "blur" }],  
+        cycle: [{ required: true, message: "请输入手机少", trigger: "blur" }]
       },
       // 列表数据
-      tableData: [
-        {
-          id: 1,
-          a: "赵金福1",
-          b: 50,
-          c: "2020-01-05 12:00",
-          d: 6,
-        },
-        {
-          id: 2,
-          a: "赵金福2",
-          b: 60,
-          c: "2020-01-05 12:00",
-          d: 6,
-        },
-        {
-          id: 3,
-          a: "赵金福3",
-          b: 70,
-          c: "2020-01-05 12:00",
-          d: 6,
-        },
-        {
-          id: 4,
-          a: "赵金福4",
-          b: 80,
-          c: "2020-01-05 12:00",
-          d: 6,
-        },
-      ],
+      tableData: [],
       // 分页
       fenYe: {
         currentPage: 1, // 当前页数
-        size: 10, // 每页多少条
-        total: 100 // 共多少页
+        total: null // 共多少页
       },
       // dialog
-      dialogVisible1: false,
+      dialogVisible1: false
     };
   },
   methods: {
     // 查询
     submitForm() {
-      this.createdData(1, this.fenYe.size);
+      this.createdData(1);
     },
     // 重置
     resetForm(ruleForm) {
       this.$refs[ruleForm].resetFields();
-      this.createdData(1, this.fenYe.size);
-    },
-    // 每页多少条
-    handleSizeChange(val) {
-      this.createdData(1, val);
+      this.createdData(1);
     },
     // 当前页数
     handleCurrentChange(val) {
-      this.createdData(val, this.fenYe.size);
+      this.createdData(val);
     },
     // 删除
-    deletes() {
+    deletes(index, row) {
       this.$confirm("您确定要删除该条数据么？", "删除确认", {
         confirmButtonText: "删除",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          let type = "";
-          let url = "";
-          let data = {};
+          let type = "post";
+          let url = "url1/lesson/delete";
+          let data = {
+            id: row.id
+          };
           this.myAjax(type, url, data, res => {
-            if (res.data == 200) {
-              this.$message.success("删除成功");
-              this.createdData(1, this.fenYe.size);
-            }
+            this.$message.success(res.data.message);
+            this.createdData(1);
           });
         })
-        .catch(() => {});
+        .catch(() => {
+          this.$message.error(res.data.message + "请联系管理员");
+        });
     },
     // 添加 - 编辑
     addEdit(row) {
       if (row.id) {
-        this.addData.id = row.id;
-        this.addData.name = row.a;
-        this.addData.cycle = row.d;
+        let type = "post";
+        let url = "url1/lesson/get";
+        let data = {
+          id: row.id
+        };
+        this.myAjax(type, url, data, res => {
+          this.addData.id = res.data.data.id;
+          this.addData.name = res.data.data.lesson_name;
+          this.addData.cycle = res.data.data.lesson_time;
+        });
       } else {
         Object.keys(this.addData).forEach(key => (this.addData[key] = ""));
       }
@@ -204,35 +176,58 @@ export default {
     determineAdd(addData) {
       this.$refs[addData].validate(valid => {
         if (valid) {
-          let type = "";
-          let url = "";
-          let data = {};
           if (this.addData.id) {
-            data.id = this.addData.id;
-          }
-          this.myAjax(type, url, data, res => {
-            if (res.data == 200) {
-              this.createdData(1, this.fenYe.size);
-              this.$message.success("添加课程成功");
+            let type = "post";
+            let url = "url1/lesson/edit";
+            let data = {
+              lesson_name: this.addData.name,
+              lesson_time: this.addData.cycle
+            };
+            if (this.addData.id) {
+              data.id = this.addData.id;
             }
-          });
+            this.myAjax(type, url, data, res => {
+              this.createdData(1);
+              this.$message.success(res.data.message);
+              this.dialogVisible1 = false;
+            });
+          } else {
+            let type = "post";
+            let url = "url1/lesson/add";
+            let data = {
+              lesson_name: this.addData.name,
+              lesson_time: this.addData.cycle
+            };
+            this.myAjax(type, url, data, res => {
+              this.createdData(1);
+              this.$message.success(res.data.message);
+              this.dialogVisible1 = false;
+            });
+          }
         }
       });
     },
     // 初始化列表数据
-    createdData(page, pages) {
-      let type = "";
-      let url = "";
-      let data = {};
+    createdData(page) {
+      let type = "post";
+      let url = "url1/lesson/lists";
+      let data = {
+        lesson_name: this.ruleForm.name,
+        page: this.fenYe.currentPage
+      };
       this.myAjax(type, url, data, res => {
-        if (res.data == 200) {
+        this.fenYe.total = res.data.data.list.total;
+        this.tableData = res.data.data.list.data;
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData[i].create_time = new Date(
+            this.tableData[i].create_time
+          ).Format("yy-MM-dd");
         }
       });
     }
   },
   created() {
-    // this.createdData(1,this.fenYe.size);
-    // this.getCurriculum();
+    this.createdData(1);
   },
   mounted() {}
 };

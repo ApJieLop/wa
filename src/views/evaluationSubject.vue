@@ -1,5 +1,5 @@
 <template>
-  <!-- 测评题目 -->
+  <!-- 测评答题 -->
   <div class="evaluationSubject">
     <el-form
       :model="ruleForm"
@@ -14,14 +14,15 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model.number="ruleForm.phone" placeholder="请填写手机号"></el-input>
       </el-form-item>
-      <el-form-item label="宝宝出生日期" prop="sj">
-        <el-date-picker
-          style="width:100%;"
-          v-model="ruleForm.sj"
-          type="date"
-          placeholder="选择日期"
-          value-format="yyyy-MM-dd"
-        ></el-date-picker>
+      <el-form-item label="选择试卷" prop="sj">
+        <el-select v-model="ruleForm.sj" filterable placeholder="请选择" style="width:100%;">
+          <el-option
+            v-for="item in options"
+            :key="item.id"
+            :label="item.juan_title"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -53,10 +54,11 @@ export default {
         phone: "",
         sj: ""
       },
+      options: [],
       rules: {
-        name: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
-        phone: [{ validator: checkPhone, trigger: "blur" }],
-        sj: [{ required: true, message: "请输入活动名称", trigger: "blur" }]
+        name: [{ required: true, message: "请输入宝宝姓名", trigger: "blur" }],
+        phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
+        sj: [{ required: true, message: "请选择试卷", trigger: "change" }]
       }
     };
   },
@@ -65,65 +67,39 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let obj = [{
-            domains: [
-              {
-                subjectNmane: "我是第一道题",
-                optionNum: "4",
-                correctOptions: "C",
-                options: [
-                  {
-                    option: "A",
-                    text: "发水电费胜多负少的"
-                  },
-                  {
-                    option: "B",
-                    text: "水电费胜多负少的"
-                  },
-                  {
-                    option: "C",
-                    text: "水电费胜多负少的"
-                  },
-                  {
-                    option: "D",
-                    text: "胜多负少的水电费"
-                  }
-                ]
-              }
-            ],
-            testPaperNanme: ""
-          }];
-           console.log(obj)
-          obj = JSON.stringify(obj);
-          localStorage.setItem("subject", obj);
-         
           this.$router.push({
-            path: "/topic"
+            path: "/topic",
+            query: {
+              id: this.ruleForm.sj
+            }
           });
-
-          //   let type = "";
-          //   let url = "";
-          //   let data = {};
-          //   this.myAjax(type, url, data, res => {
-          //     if (res.data == 200) {
-          //       obj = ; //转化为JSON字符串
-          //       localStorage.setItem("subject", JSON.stringify(res.data.data));
-          //       console.log(JSON.parse(localStorage.getItem("subject")));
-          //       this.$router.push({
-          //         path: "/topic"
-          //       });
-          //     }
-          //   });
+        }
+      });
+    },
+    // 获取题
+    gerTopic() {
+      let type = "post";
+      let url = "url1/juan/lists";
+      let data = {
+        juan_title:"",
+        page:1
+      };
+      this.myAjax(type, url, data, res => {
+        this.options = res.data.data.list.data;
+         for (let i = 0; i < this.options.length; i++) {
+          this.options[i].id = String(this.options[i].id);
         }
       });
     },
     // 重置
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields();        
     }
   },
   mounted() {},
-  created() {}
+  created() {
+    this.gerTopic();
+  }
 };
 </script>
   

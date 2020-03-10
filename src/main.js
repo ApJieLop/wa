@@ -29,7 +29,7 @@ const closeLoading = () => {
   ElementUI.Loading.service({}).close();
 }
 //主域名
-// axios.defaults.baseURL = 'http://www.tj-hwyl.com/index';
+// axios.defaults.baseURL = 'http://www.tj-hwyl.com/api/index';
 //定义headers格式
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 //Authorization - token
@@ -63,15 +63,15 @@ axios.interceptors.response.use(function (response) {
   } else if (response.data.code == 401) {
     localStorage.clear();
     router.push("/");
-    ElementUI.Message.error(response.message + ',请联系管理员!');
+    ElementUI.Message.error(response.data.message + ',请联系管理员!');
     return false;
     // 服务器失败
   } else {
-    ElementUI.Message.error(response.message + ',请联系管理员!');
+    ElementUI.Message.error(response.data.message + ',请联系管理员!');
     return false;
   }
 }, function (error) {
-  ElementUI.Message.error(response.message + ',请联系管理员!');
+  ElementUI.Message.error(response.data.message + ',请联系管理员!');
   return Promise.reject(error);
 });
 

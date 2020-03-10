@@ -15,12 +15,23 @@
         :label="'第' + (index+1) +'题'"
         :key="index"
       >
-        <span class="Ttittle" style="width:auto;margin-right: 20px;">题目名称</span>
-        <el-input class="inputSelect" style="width:60%;" v-model="domain.subjectNmane" placeholder="请输入题目名称"></el-input>
-        <span class="Ttittle" style="width:auto;margin-right: 20px;clear: both;">选项数量</span>
+        <span class="Ttittle" style="width:auto;margin-right: .2rem;">题目名称</span>
+        <el-input
+          class="inputSelect"
+          style="width:60%;"
+          v-model="domain.subjectNmane"
+          placeholder="请输入题目名称"
+        ></el-input>
+        <el-button
+          type="danger"
+          plain
+          @click.prevent="removeDomain(domain)"
+          style="float: right;"
+        >删除</el-button>
+        <span class="Ttittle" style="width:auto;margin-right: .2rem;clear: both;">选项数量</span>
         <el-select
           class="inputSelect"
-          style="width:auto;"
+          style="width:15%;"
           v-model="domain.optionNum"
           placeholder="选项数量"
           @change="selectionQuantity(domain,index)"
@@ -30,10 +41,10 @@
           <el-option label="3" value="3"></el-option>
           <el-option label="4" value="4"></el-option>
         </el-select>
-        <span class="Ttittle" style="margin-right: 20px;margin-left: 20px;width:auto;">正确选项</span>
+        <span class="Ttittle" style="margin-right: .2rem;margin-left: 20px;width:auto;">正确选项</span>
         <el-select
           class="inputSelect"
-          style="width:1.5rem;"
+          style="width:15%;"
           v-model="domain.correctOptions"
           placeholder="正确选项"
         >
@@ -42,12 +53,14 @@
           <el-option label="C" value="C" :disabled="Number(domain.optionNum)<3?true:false"></el-option>
           <el-option label="D" value="D" :disabled="Number(domain.optionNum)<4?true:false"></el-option>
         </el-select>
-        <el-button
-          type="danger"
-          plain
-          @click.prevent="removeDomain(domain)"
-          style="float: right;"
-        >删除</el-button>
+        <span class="Ttittle" style="margin-right: .2rem;margin-left: .2rem;width:auto;">本题分数</span>
+          <el-input
+            class="inputSelect"
+            style="width:15%;"
+            v-model="domain.fraction"
+            placeholder="分数"           
+          ></el-input>
+        
         <template>
           <span class="Ttittle" style="clear: both;">{{ domain.options[0].option }}</span>
           <el-input
@@ -100,15 +113,18 @@ export default {
     return {
       testPaperId: "", // 试卷id
       dynamicValidateForm: {
+        testPaperNanme: "", // 试卷名称
         domains: [
           {
-            subjectNmane: "",
-            optionNum: "4",
-            correctOptions:"",
+            subjectNmane: "", // 题目名称
+            optionNum: "4", // 选项数量
+            correctOptions: "", // 正确选项  'A'
+            fraction:"", // 分数
             options: [
+              // 选项
               {
-                option: "A",
-                text: ""
+                option: "A", // A
+                text: "" // 选项内容文字
               },
               {
                 option: "B",
@@ -124,19 +140,57 @@ export default {
               }
             ]
           }
-        ],
-        testPaperNanme: ""
+        ]
       }
     };
   },
   methods: {
     // 选择数量
-    selectionQuantity(domain,index){
-        domain.correctOptions = '';
+    selectionQuantity(domain, index) {
+      domain.correctOptions = "";
+      if(domain.optionNum == 1) {
+        domain.options[3].text = "";
+        domain.options[2].text = "";
+        domain.options[1].text = "";
+      }
+      if(domain.optionNum == 2) {
+        domain.options[3].text = "";
+        domain.options[2].text = "";
+      }
+      if(domain.optionNum == 3) {
+        domain.options[3].text = "";
+      }
     },
     // 提交
     submitForm() {
-        console.log(this.dynamicValidateForm)
+      if (this.testPaperId) {
+        let type = "post";
+        let url = "url1/juan/edit";
+        let data = {
+          id: this.testPaperId,
+          juan_title: this.dynamicValidateForm.testPaperNanme,
+          juan_content: JSON.stringify(this.dynamicValidateForm.domains)
+        };
+        this.myAjax(type, url, data, res => {
+          this.$message.success(res.data.message);
+          this.$router.push({
+            path: "/evaluationImport"
+          });
+        });
+      } else {
+        let type = "post";
+        let url = "url1/juan/add";
+        let data = {
+          juan_title: this.dynamicValidateForm.testPaperNanme,
+          juan_content: JSON.stringify(this.dynamicValidateForm.domains)
+        };
+        this.myAjax(type, url, data, res => {
+          this.$message.success(res.data.message);
+          this.$router.push({
+            path: "/evaluationImport"
+          });
+        });
+      }
     },
     // 删除
     removeDomain(item) {
@@ -150,7 +204,8 @@ export default {
       this.dynamicValidateForm.domains.push({
         subjectNmane: "",
         optionNum: "4",
-        correctOptions:"",
+        correctOptions: "",
+        fraction:"",
         options: [
           {
             option: "A",
@@ -176,6 +231,15 @@ export default {
   created() {
     if (this.$route.query.id) {
       this.testPaperId = this.$route.query.id;
+      let type = "post";
+      let url = "url1/juan/get";
+      let data = {
+        id: this.$route.query.id,
+      };
+      this.myAjax(type, url, data, res => {
+       this.dynamicValidateForm.testPaperNanme = res.data.data.juan_title;
+       this.dynamicValidateForm.domains = JSON.parse(res.data.data.juan_content);       
+      });
     }
   }
 };

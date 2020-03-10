@@ -1,6 +1,11 @@
 import Vue from "vue";
 import Router from "vue-router";
 
+// ElementUI框架
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+
 Vue.use(Router);
 
 const router = new Router({
@@ -13,7 +18,8 @@ const router = new Router({
       component: resolve =>
         require(['@/components/publicHead.vue'], resolve),
       meta: {
-        title: '首页'
+        title: '首页',
+        requiresAuth: true
       },
       // redirect() {
       //   return '/evaluationAnalysis'
@@ -26,7 +32,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/home1.vue'], resolve),
           meta: {
-            title: '测评分析'
+            title: '测评分析',
+            requiresAuth: true
           }
         },
         // 首页 - 2(老师)
@@ -36,7 +43,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/home2.vue'], resolve),
           meta: {
-            title: '测评分析'
+            title: '测评分析',
+            requiresAuth: true
           }
         },
         // 测评分析
@@ -46,17 +54,19 @@ const router = new Router({
           component: resolve =>
             require(['@/views/evaluationAnalysis.vue'], resolve),
           meta: {
-            title: '测评分析'
+            title: '测评分析',
+            requiresAuth: true
           }
         },
-        // 课程管理
+        // 课程签到
         {
           path: "/curriculumAdministration",
           name: "curriculumAdministration",
           component: resolve =>
             require(['@/views/curriculumAdministration.vue'], resolve),
           meta: {
-            title: '课程管理 - 学员'
+            title: '课程签到',
+            requiresAuth: true
           }
         },
         // 测评导入
@@ -66,7 +76,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/evaluationImport.vue'], resolve),
           meta: {
-            title: '测评导入'
+            title: '测评导入',
+            requiresAuth: true
           }
         },
         // 测评试卷编辑
@@ -76,7 +87,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/testPaper.vue'], resolve),
           meta: {
-            title: '测评试卷编辑'
+            title: '测评试卷编辑',
+            requiresAuth: true
           }
         },
         // 客户档案
@@ -86,7 +98,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/customerFiles.vue'], resolve),
           meta: {
-            title: '客户档案'
+            title: '客户档案',
+            requiresAuth: true
           }
         },
         // 老师管理
@@ -96,7 +109,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/teacherAdministration.vue'], resolve),
           meta: {
-            title: '老师管理'
+            title: '老师管理',
+            requiresAuth: true
           }
         },
         // 课程管理
@@ -106,7 +120,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/scurriculumAdministration.vue'], resolve),
           meta: {
-            title: '课程管理'
+            title: '课程管理',
+            requiresAuth: true
           }
         },
         // 查看学员
@@ -116,7 +131,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/seeStudent.vue'], resolve),
           meta: {
-            title: '查看学员'
+            title: '查看学员',
+            requiresAuth: true
           }
         },
         // 已测题目
@@ -126,7 +142,8 @@ const router = new Router({
           component: resolve =>
             require(['@/views/subjectTested.vue'], resolve),
           meta: {
-            title: '已测题目'
+            title: '已测题目',
+            requiresAuth: true
           }
         },
         // 测评结果
@@ -136,19 +153,20 @@ const router = new Router({
           component: resolve =>
             require(['@/views/evaluationResult.vue'], resolve),
           meta: {
-            title: '测评结果'
+            title: '测评结果',
+            requiresAuth: true
           }
         },
       ]
     },
-    // 测评题目
+    // 测评答题
     {
       path: "/evaluationSubject",
       name: "evaluationSubject",
       component: resolve =>
         require(['@/views/evaluationSubject.vue'], resolve),
       meta: {
-        title: '课程管理'
+        title: '测评答题'
       }
     },
      // 答题
@@ -213,15 +231,17 @@ router.beforeEach((to, from, next) => {
     document.title = '新生儿测评系统'
   }
   //获取store里面的token
-  let token = sessionStorage.getItem("token");
+  let token = localStorage.getItem("token");
   //判断要去的路由有没有requiresAuth
   if (to.meta.requiresAuth) {
     if (token) {
       next();
     } else {
+      localStorage.clear();
+      ElementUI.Message.error("登录已失效，请重新登录");
       next({
-        path: '/login',
-        query: { redirect: to.fullPath }  // 将刚刚要去的路由path（却无权限）作为参数，方便登录成功后直接跳转到该路由
+        path: '/',
+        // query: { redirect: to.fullPath }  // 将刚刚要去的路由path（却无权限）作为参数，方便登录成功后直接跳转到该路由
       });
     }
   } else {

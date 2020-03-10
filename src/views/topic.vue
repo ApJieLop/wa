@@ -1,14 +1,15 @@
 <template>
   <!-- 题 -->
   <div class="topic">
-    <div v-for="(item,index) in t[0].domains" :key="index" v-show="index === x">
+    <div v-for="(item,index) in t" :key="index" v-show="index === x">
       <h1>{{index+1}}、{{item.subjectNmane}}</h1>
-      <el-button
+      <el-button       
         class="btns"
         type="primary"
         v-for="(infoitem,index) in item.options"
         :key="infoitem+index"
         @click="choice(infoitem.option)"
+        v-show="infoitem.text"
       >{{ infoitem.option }}、{{ infoitem.text }}</el-button>
     </div>
   </div>
@@ -31,20 +32,31 @@ export default {
       this.s.push(choice);
       if (this.x >= this.l - 1) {
         this.$router.push({
-          path: '/answerResult',
+          path: "/answerResult",
           query: {
-            img: '是德国法国电饭锅放大.png'
+            img: "是德国法国电饭锅放大.png"
           }
         });
       } else {
         this.x = this.x + 1;
       }
+    },
+    // 获取题
+    gerTopic() {
+      let type = "post";
+      let url = "url1/juan/get";
+      let data = {
+        id: this.$route.query.id
+      };
+      this.myAjax(type, url, data, res => {
+        this.t = JSON.parse(res.data.data.juan_content);
+        this.l = this.t.length;
+      });
     }
   },
   mounted() {},
   created() {
-    this.t = JSON.parse(localStorage.getItem("subject"));
-    this.l = this.t.length;
+    this.gerTopic();
   }
 };
 </script>
