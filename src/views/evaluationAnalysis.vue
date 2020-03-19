@@ -23,28 +23,35 @@
             <template slot-scope="scope">{{ scope.$index+1 }}</template>
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="juan_title"
             show-overflow-tooltip
             align="center"
-            label="题目名称"
+            label="试卷名称"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="address"
+            prop="jiazhang_name"
             show-overflow-tooltip
             align="center"
             label="测评人姓名"
             min-width="80"
           ></el-table-column>
+           <el-table-column
+            prop="create_time"
+            show-overflow-tooltip
+            align="center"
+            label="测评时间"
+            min-width="80"
+          ></el-table-column>
           <el-table-column
-            prop="address"
+            prop="jiazhang_mobile"
             show-overflow-tooltip
             align="center"
             label="测评人电话"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="address"
+            prop="score"
             show-overflow-tooltip
             align="center"
             label="答题分数"
@@ -164,6 +171,12 @@
         <el-button type="primary" @click="determineAdd('addData')">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- dialog -->
+    <el-dialog title="测评结果" :visible.sync="dialogVisible2" width="60%">
+      <p>试卷名称:{{ result.name }}</p>
+      <br>
+      <p>答题分数:{{ result.num }}</p>
+    </el-dialog>
   </div>
 </template>
   
@@ -256,35 +269,20 @@ export default {
         ]
       },
       // 列表数据
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市16 弄"
-        }
-      ],
+      tableData: [],
       // 分页
       fenYe: {
         currentPage: 1, // 当前页数
         total: 1 // 共多少页
       },
       // dialog
-      dialogVisible1: false
+      dialogVisible1: false,
+      dialogVisible2: false,
+      // 查看测评结果
+      result:{
+        name:'',
+        num:""
+      }
     };
   },
   methods: {
@@ -303,24 +301,24 @@ export default {
     },
     // 查看
     see(row) {
-      this.$router.push({
-        path: "/evaluationResult",
-        query: {
-          id: row.id
-        }
-      });
+      console.log(row)
+      this.dialogVisible2 = true;
+      this.result.name = row.message;
+      this.result.num = row.score;
     },
     // 删除
-    deletes() {
+    deletes(index,row) {
       this.$confirm("您确定要删除该条数据么？", "删除确认", {
         confirmButtonText: "删除",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          let type = "";
-          let url = "";
-          let data = {};
+          let type = "post";
+          let url = "url1/ceping/delete";
+          let data = {
+            id:row.id
+          };
           this.myAjax(type, url, data, res => {
             this.$message.success(res.data.message);
             this.createdData(1);
@@ -361,16 +359,30 @@ export default {
     },
     // 初始化列表数据
     createdData(page) {
-      let type = "";
-      let url = "";
-      let data = {};
+      let type = "post";
+      let url = "url1/ceping/lists";
+      let data = {
+        test_name:this.ruleForm.name,
+        page:page
+      };
       this.myAjax(type, url, data, res => {
-        
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list.data;
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData[i].create_time = new Date(
+            this.tableData[i].create_time * 1000
+          ).Format("yy-MM-dd");
+        }
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData[i].birthday = new Date(
+            this.tableData[i].birthday * 1000
+          ).Format("yy-MM-dd");
+        }
       });
     }
   },
   created() {
-    // this.createdData(1);
+    this.createdData(1);
   },
   mounted() {}
 };

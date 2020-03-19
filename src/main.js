@@ -64,14 +64,17 @@ axios.interceptors.response.use(function (response) {
     localStorage.clear();
     router.push("/");
     ElementUI.Message.error(response.data.message + ',请联系管理员!');
+    closeLoading();
     return false;
     // 服务器失败
   } else {
     ElementUI.Message.error(response.data.message + ',请联系管理员!');
+    closeLoading();
     return false;
   }
 }, function (error) {
   ElementUI.Message.error(response.data.message + ',请联系管理员!');
+  closeLoading();
   return Promise.reject(error);
 });
 

@@ -96,10 +96,11 @@ export default {
                 setTimeout(function() {
                 ElementUI.Loading.service({}).close();
                   _this.$router.push("/home1");
-                }, 1500);
+                }, 1500);              
                 localStorage.setItem('uid', res.data.data.id);
+                localStorage.setItem('uname', res.data.data.admin_name);
                 localStorage.setItem('token', res.data.data.token);
-                localStorage.setItem('type', 1);
+                localStorage.setItem('type', 1);              
               } else {
                 ElementUI.Loading.service({}).close();
                 this.$message.warning(res.data.message);
@@ -125,6 +126,7 @@ export default {
                   _this.$router.push("/home2");
                 }, 1500);
                 localStorage.setItem('uid', res.data.data.id);
+                localStorage.setItem('uname', res.data.data.teacher_name);
                 localStorage.setItem('token', res.data.data.token);
                 localStorage.setItem('type', 2);
               } else {

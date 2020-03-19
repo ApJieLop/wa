@@ -1,7 +1,7 @@
 <template>
   <!-- 测评导入 -->
   <div class="evaluationImport">
-    <el-button class="importEvaluation" type="text"  @click="see">导入测评</el-button>
+    <el-button class="importEvaluation" type="text" @click="see">导入测评</el-button>
     <!-- tap -->
     <el-tabs v-model="activeName">
       <el-tab-pane label="测评导入" name="evaluationImport">
@@ -28,7 +28,7 @@
             min-width="120"
           ></el-table-column>
           <el-table-column
-            prop="b"
+            prop="dati_count"
             show-overflow-tooltip
             align="center"
             label="答题人数(人)"
@@ -42,7 +42,7 @@
             min-width="100"
           ></el-table-column>
           <el-table-column align="center" label="操作" min-width="80" show-overflow-tooltip>
-            <template slot-scope="scope">             
+            <template slot-scope="scope">
               <el-button type="text" @click="see(scope.row)">编辑</el-button>
               <el-button type="text" style="color:red" @click="deletes(scope.$index,scope.row)">删除</el-button>
             </template>
@@ -96,7 +96,7 @@ export default {
     },
     // 编辑
     see(row) {
-      if(row.id){
+      if (row.id) {
         this.$router.push({
           path: "/testPaper",
           query: {
@@ -105,12 +105,12 @@ export default {
         });
       } else {
         this.$router.push({
-          path: "/testPaper",
+          path: "/testPaper"
         });
       }
     },
     // 删除
-    deletes(index,row) {
+    deletes(index, row) {
       this.$confirm("您确定要删除该条数据么？", "删除确认", {
         confirmButtonText: "删除",
         cancelButtonText: "取消",
@@ -120,11 +120,11 @@ export default {
           let type = "post";
           let url = "url1/juan/delete";
           let data = {
-            id:row.id
+            id: row.id
           };
-          this.myAjax(type, url, data, res => {          
+          this.myAjax(type, url, data, res => {
             this.$message.success(res.data.message);
-            this.createdData(1);            
+            this.createdData(1);
           });
         })
         .catch(() => {});
@@ -135,17 +135,21 @@ export default {
       let url = "url1/juan/lists";
       let data = {
         juan_title: this.ruleForm.name,
-        page:page
+        page: page
       };
       this.myAjax(type, url, data, res => {
-        console.log(res.data.data)
-        this.fenYe.total = res.data.data.list.total;
-        this.tableData = res.data.data.list.data;
+        // let obj = res.data.data.list;
+        // var arr = [];
+        // for (let i in obj) {
+        //   arr.push(obj[i]);      
+        // }
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list;
         for (let i = 0; i < this.tableData.length; i++) {
           this.tableData[i].create_time = new Date(
             this.tableData[i].create_time * 1000
           ).Format("yy-MM-dd");
-        }        
+        }
       });
     }
   },
@@ -164,8 +168,8 @@ export default {
   position: relative;
   .importEvaluation {
     position: absolute;
-    top: .05rem;
-    right: .4rem;
+    top: 0.05rem;
+    right: 0.4rem;
     z-index: 1;
   }
   .demo-ruleForm {

@@ -28,13 +28,15 @@
             label="老师姓名"
             min-width="80"
           ></el-table-column>
-          <el-table-column
-            prop="b"
-            show-overflow-tooltip
-            align="center"
-            label="学员数量"
-            min-width="80"
-          ></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="学员数量" min-width="80">
+            <template slot-scope="scope">
+              <font
+                @click="jumpSeeStudent(scope.row.id)"
+                color="#2cb4df"
+                style="display: block;cursor:pointer;"
+              >{{ scope.row.user_count }}</font>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="create_time"
             show-overflow-tooltip
@@ -139,6 +141,15 @@ export default {
     handleCurrentChange(val) {
       this.createdData(val);
     },
+    // 学员数量 - 跳转查看学员页面
+    jumpSeeStudent(id){
+      this.$router.push({
+        path: "/seeStudent",
+        query: {
+          id: id
+        }
+      });
+    },
     // 删除
     deletes(index, row) {
       this.$confirm("您确定要删除该条数据么？", "删除确认", {
@@ -229,8 +240,8 @@ export default {
         page: page
       };
       this.myAjax(type, url, data, res => {
-        this.fenYe.total = res.data.data.list.total;
-        this.tableData = res.data.data.list.data;
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list;
         for (let i = 0; i < this.tableData.length; i++) {
           this.tableData[i].create_time = new Date(
             this.tableData[i].create_time*1000

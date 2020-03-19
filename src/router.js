@@ -145,18 +145,7 @@ const router = new Router({
             title: '已测题目',
             requiresAuth: true
           }
-        },
-        // 测评结果
-        {
-          path: "/evaluationResult",
-          name: "evaluationResult",
-          component: resolve =>
-            require(['@/views/evaluationResult.vue'], resolve),
-          meta: {
-            title: '测评结果',
-            requiresAuth: true
-          }
-        },
+        }
       ]
     },
     // 测评答题
@@ -177,16 +166,6 @@ const router = new Router({
         require(['@/views/topic.vue'], resolve),
       meta: {
         title: '答题'
-      }
-    },
-     // 答题结果
-     {
-      path: "/answerResult",
-      name: "answerResult",
-      component: resolve =>
-        require(['@/views/answerResult.vue'], resolve),
-      meta: {
-        title: '答题结果'
       }
     },
     // 登录

@@ -1,7 +1,7 @@
 <template>
 <!-- 答题结果 -->
   <div class="hello">
-    <img src="../../public/static/images/k_1.png" alt="">
+    
   </div>
 </template>
   
@@ -16,7 +16,7 @@ export default {
   methods: {},
   mounted() {},
   created() {
-      console.log(this.$route.query.img)
+      console.log(JSON.parse(this.$route.query.info))
   }
 };
 </script>

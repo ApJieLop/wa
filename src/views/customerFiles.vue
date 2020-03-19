@@ -43,7 +43,7 @@
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="create_time"
+            prop="lesson_time"
             show-overflow-tooltip
             align="center"
             label="剩余课时"
@@ -54,8 +54,8 @@
               <font
                 @click="subjectTested(scope.row.id)"
                 color="#2cb4df"
-                style="display: block;"
-              >{{ scope.row.e }}</font>
+                style="display: block;cursor:pointer;"
+              >{{ scope.row.ceping_count }}</font>
             </template>
           </el-table-column>
           <el-table-column
@@ -102,17 +102,7 @@
           v-if="addData.id?true:false"
         >
           <el-input v-model="addData.userNumber"></el-input>
-        </el-form-item>-->
-        <!-- <el-form-item label="选择课程" prop="curriculum" style="width:4rem;">
-          <el-select v-model="addData.curriculum" placeholder="请选择" style="width:100%">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.title"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>-->
+        </el-form-item>-->       
         <el-form-item label="宝宝名称" prop="b_name" style="width:4rem;">
           <el-input v-model="addData.b_name" placeholder="请输入宝宝名称"></el-input>
         </el-form-item>
@@ -173,6 +163,16 @@
         <el-form-item label="母亲文化程度" prop="m_culture" style="width:4rem;">
           <el-input v-model="addData.m_culture" placeholder="请输入母亲文化程度"></el-input>
         </el-form-item>
+        <el-form-item label="选择老师" prop="teacher_id" style="width:4rem;">
+          <el-select v-model="addData.teacher_id" placeholder="请选择" style="width:100%">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.teacher_name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible1 = false">取 消</el-button>
@@ -181,14 +181,14 @@
     </el-dialog>
     <!-- dialog -->
     <el-dialog title="添加课时" :visible.sync="dialogVisible2">
-      <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="请填写课时" prop="addCurriculum" style="width:100%;">
-            <el-input v-model="ruleForm.addCurriculum" placeholder="请输入请课时"></el-input>
-          </el-form-item>
-        </el-form>
+      <el-form :model="addCurriculum" ref="addCurriculum" :rules="rules1"  label-width="100px" class="demo-ruleForm">
+        <el-form-item label="请填写课时" prop="num" style="width:100%;">
+          <el-input v-model="addCurriculum.num" placeholder="请输入请课时"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="curriculumDetermine">确 定</el-button>
+        <el-button type="primary" @click="curriculumDetermine('addCurriculum')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -206,32 +206,11 @@ export default {
         name: ""
       },
       // 课程下拉数据
-      options: [
-        {
-          id: 1,
-          title: "黄金糕"
-        },
-        {
-          id: 2,
-          title: "双皮奶"
-        },
-        {
-          id: 3,
-          title: "蚵仔煎"
-        },
-        {
-          id: 4,
-          title: "龙须面"
-        },
-        {
-          id: 5,
-          title: "北京烤鸭"
-        }
-      ],
+      options: [],
       // 建新档案
       addData: {
         // userNumber: "", // 客户编号
-        // curriculum: "", // 选择课程
+        teacher_id: "", // 选择老师
         b_name: "", // 宝宝名称
         b_gender: "", // 宝宝性别
         b_birthData: "", // 宝宝出生日期
@@ -248,9 +227,9 @@ export default {
       },
       // 建新档案 - 数据校验
       rules: {
-        // curriculum: [
-        //   { required: true, message: "请选择课程称", trigger: "blur" }
-        // ],
+        teacher_id: [
+          { required: true, message: "请选择老师", trigger: "blur" }
+        ],
         b_name: [
           { required: true, message: "请输入宝宝名称", trigger: "blur" }
         ],
@@ -305,7 +284,14 @@ export default {
         ]
       },
       // 添加课时
-      addCurriculum:"",
+      addCurriculum: {
+        id: "",
+        num: ""
+      },
+      // 添加课时 - 数据校验
+      rules1: {
+        num: [{ required: true, message: "请选添加课时", trigger: "blur" }]
+      },
       // 列表数据
       tableData: [],
       // 分页
@@ -351,7 +337,7 @@ export default {
           });
         })
         .catch(() => {
-          this.$message.error(res.data.message + '，请联系管理员');
+          this.$message.error(res.data.message + "，请联系管理员");
         });
     },
     // 编辑
@@ -375,10 +361,10 @@ export default {
           ); // 完成问卷时间
           this.addData.b_age = res.data.data.user_age; // 宝宝年龄
           this.addData.b_weight = res.data.data.user_weight; // 宝宝体重
-          let arr = [];         
-          let str = res.data.data.user_zhuangkuang.replace(/,/g,'');
-          for(let i=0;i<str.length;i++){
-           arr.push(str.charAt(i))
+          let arr = [];
+          let str = res.data.data.user_zhuangkuang.replace(/,/g, "");
+          for (let i = 0; i < str.length; i++) {
+            arr.push(str.charAt(i));
           }
           this.addData.j_situation = arr; // 出生时情况
           this.addData.f_name = res.data.data.father_name; // 父亲姓名
@@ -402,7 +388,8 @@ export default {
             let type = "post";
             let url = "url1/user/edit";
             let data = {
-              id: this.addData.id, // id
+              id: this.addData.id, // 用户id
+              teacher_id:this.addData.teacher_id, // 老师id
               user_name: this.addData.b_name, // 宝宝名称
               user_sex: this.addData.b_gender, // 宝宝性别
               user_birthday: this.addData.b_birthData.getTime() / 1000, // 宝宝出生日期
@@ -426,6 +413,7 @@ export default {
             let type = "post";
             let url = "url1/user/add";
             let data = {
+              teacher_id:this.addData.teacher_id, // 老师id
               user_name: this.addData.b_name, // 宝宝名称
               user_sex: this.addData.b_gender, // 宝宝性别
               user_birthday: this.addData.b_birthData.getTime() / 1000, // 宝宝出生日期
@@ -454,14 +442,14 @@ export default {
       let type = "post";
       let url = "url1/teacher/lists";
       let data = {
-        teacher_name: "sdfsdfds",
+        teacher_name: "",
         page: 1
       };
       this.myAjax(type, url, data, res => {
         console.log(res);
       });
     },
-    // 已测评
+    // 点击已测评数 - 跳转已测评
     subjectTested(id) {
       this.$router.push({
         path: "/subjectTested",
@@ -473,12 +461,36 @@ export default {
     // 添加课时
     signIn(row) {
       this.dialogVisible2 = true;
-      this.zid = row.id;
+      this.addCurriculum.id = row.id;
+      this.addCurriculum.num = '';
     },
     // 添加课时 - 确定
-    curriculumDetermine() {
-      this.dialogVisible2 = false;
+    curriculumDetermine(addCurriculum) {
+      this.$refs[addCurriculum].validate(valid => {
+        if (valid) {
+          let type = "post";
+          let url = "url1/lesson/lessiontime";
+          let data = {
+            id: this.addCurriculum.id,
+            lesson_time:this.addCurriculum.num
+          };
+          console.log(data)
+          this.myAjax(type, url, data, res => {
+            this.dialogVisible2 = false;
+           this.$message.success(res.data.message);
+          });
+        }
+      });
     },
+    // 初始化获取所有老师
+    getAllTeacher(){
+      let type = "post";
+      let url = "url1/teacher/alllist";
+      let data = {};
+      this.myAjax(type, url, data, res => {
+       this.options = res.data.data[0];
+      });
+    },  
     // 初始化列表数据
     createdData(page) {
       let type = "post";
@@ -488,8 +500,8 @@ export default {
         page: page
       };
       this.myAjax(type, url, data, res => {
-        this.fenYe.total = res.data.data.list.total;
-        this.tableData = res.data.data.list.data;
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list;
         for (let i = 0; i < this.tableData.length; i++) {
           this.tableData[i].create_time = new Date(
             this.tableData[i].create_time * 1000
@@ -500,13 +512,12 @@ export default {
             this.tableData[i].user_birthday * 1000
           ).Format("yy-MM-dd");
         }
-        console.log(res.data.data);
       });
     }
   },
   created() {
     this.createdData(1);
-    // this.getCurriculum();
+    this.getAllTeacher();
   },
   mounted() {}
 };

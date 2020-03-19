@@ -3,15 +3,25 @@
   <div class="topic">
     <div v-for="(item,index) in t" :key="index" v-show="index === x">
       <h1>{{index+1}}、{{item.subjectNmane}}</h1>
-      <el-button       
+      <el-button
         class="btns"
         type="primary"
         v-for="(infoitem,index) in item.options"
         :key="infoitem+index"
-        @click="choice(infoitem.option)"
+        @click="choice(infoitem.fraction)"
         v-show="infoitem.text"
       >{{ infoitem.option }}、{{ infoitem.text }}</el-button>
     </div>
+    <!-- dialog -->
+    <el-dialog title="测评结果" :visible.sync="dialogVisible2" width="60%">
+      <p>试卷名称:{{ f }}</p>
+      <br />
+      <p>答题分数:{{ text }}</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="curriculumDetermine">继续答题</el-button>
+        <el-button type="primary" @click="curriculumDetermine">我知道了</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
   
@@ -23,19 +33,33 @@ export default {
       x: 0, // 当前题目号，用来显示当前题
       t: "", // 所有题
       l: "", // 题目总长度，用来判定是否为最后一题
-      s: [] // 所有答案
+      s: [], // 所有答案
+      dialogVisible2: false, // 结果 - loading
+      f:'', //  答题结果 - 分数
+      text:"" // 答题结果 - 文字
     };
   },
   methods: {
     // 点击选项
-    choice(choice) {
-      this.s.push(choice);
+    choice(fraction) {
+      this.s.push({
+        fraction: fraction
+      });
       if (this.x >= this.l - 1) {
-        this.$router.push({
-          path: "/answerResult",
-          query: {
-            img: "是德国法国电饭锅放大.png"
-          }
+        let type = "post";
+        let url = "url1/ceping/dati";
+        let data = {
+          test_content: JSON.stringify(this.s),
+          teacher_id: localStorage.getItem("uid"),
+          jiazhang_name: JSON.parse(this.$route.query.info).jiazhang_name,
+          jiazhang_mobile: JSON.parse(this.$route.query.info).jiazhang_mobile,
+          birthday: JSON.parse(this.$route.query.info).birthday,
+          juan_id: JSON.parse(this.$route.query.info).juan_id
+        };
+        this.myAjax(type, url, data, res => {
+          this.f = res.data.data.score;
+          this.text = res.data.data.text;
+          this.dialogVisible2 = true;
         });
       } else {
         this.x = this.x + 1;
@@ -46,12 +70,16 @@ export default {
       let type = "post";
       let url = "url1/juan/get";
       let data = {
-        id: this.$route.query.id
+        id: JSON.parse(this.$route.query.info).juan_id
       };
       this.myAjax(type, url, data, res => {
         this.t = JSON.parse(res.data.data.juan_content);
         this.l = this.t.length;
       });
+    },
+    // 继续答题
+    curriculumDetermine() {
+      this.$router.push("/evaluationSubject");
     }
   },
   mounted() {},

@@ -25,7 +25,7 @@
       >
         <span class="el-dropdown-link">
           <img class="tx" src="../../public/static/images/tx.jpg" alt />
-          赵金福
+            {{ uname == 'admin'?'管理员':uname }}       
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -49,6 +49,7 @@ export default {
     return {
       // 判断 - 管理员登录&学员登录
       type:'',
+      uname:'',
       // 管理员
       navigation1: [
         {
@@ -117,6 +118,7 @@ export default {
   mounted() {},
   created() {
     this.type = localStorage.getItem('type');
+    this.uname = localStorage.getItem('uname');
   }
 };
 </script>

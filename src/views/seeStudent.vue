@@ -7,7 +7,7 @@
         <!-- 检索 -->
         <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
           <el-form-item label="题目名称" prop="name">
-            <el-input v-model="ruleForm.name" placeholder="请输入学员名称"></el-input>
+            <el-input v-model="ruleForm.name" placeholder="请输入学客户名称"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
@@ -23,7 +23,7 @@
             prop="a"
             show-overflow-tooltip
             align="center"
-            label="学员名称"
+            label="客户名称"
             min-width="150"
           ></el-table-column>
           <el-table-column
@@ -60,12 +60,9 @@
     </el-tabs>
     <!-- 分页 -->
     <el-pagination
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page.sync="fenYe.currentPage"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="fenYe.size"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="total, prev, pager, next, jumper"
       :total="fenYe.total"
     ></el-pagination>
     <!-- dialog -->
@@ -80,7 +77,7 @@ export default {
     return {
       // 当前的tap
       activeName: "seeStudent",
-      // id
+      // 客户id
       id: "",
       // 检索内容
       ruleForm: {
@@ -120,8 +117,7 @@ export default {
       // 分页
       fenYe: {
         currentPage: 1, // 当前页数
-        size: 10, // 每页多少条
-        total: 100 // 共多少页
+        total: null // 共多少页
       },
       // dialog
       dialogVisible1: false
@@ -130,20 +126,16 @@ export default {
   methods: {
     // 查询
     submitForm() {
-      this.createdData(1, this.fenYe.size);
+      this.createdData(1);
     },
     // 重置
     resetForm(ruleForm) {
       this.$refs[ruleForm].resetFields();
-      this.createdData(1, this.fenYe.size);
-    },
-    // 每页多少条
-    handleSizeChange(val) {
-      this.createdData(1, val);
+      this.createdData(1);
     },
     // 当前页数
     handleCurrentChange(val) {
-      this.createdData(val, this.fenYe.size);
+      this.createdData(val);
     },
     // 已测题目
     subjectTested(id) {
@@ -152,21 +144,26 @@ export default {
         query: {
           id: id
         }
-      });
+      });     
     },
     // 初始化列表数据
-    createdData(page, pages) {
-      let type = "";
-      let url = "";
-      let data = {};
+    createdData(page) {
+      let type = "post";
+      let url = "url1/ceping/userlist";
+      let data = {
+        page:page
+      };
+      if(this.id){
+        data.id = this.id;
+      }
       this.myAjax(type, url, data, res => {
-        if (res.data == 200) {
-        }
+        console.log(res.data)
       });
     }
   },
   created() {
-    // this.createdData(1,this.fenYe.size);
+    this.id = this.$route.query.id;
+    this.createdData(1);
   },
   mounted() {}
 };
