@@ -42,6 +42,7 @@ axios.defaults.headers.common["token"] = localStorage.getItem('token');
 // 登录类型 1 - 管理员  2 - 老师理员
 axios.defaults.headers.common["tokentype"] = localStorage.getItem('type');
 // 请求拦截器
+console.log(localStorage.getItem('token'))
 axios.interceptors.request.use(function (config) {
   console.log(localStorage.getItem('token'))
   if(!localStorage.getItem('token')){
