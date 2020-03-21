@@ -18,6 +18,11 @@ Vue.use(ElementUI);
 import echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
+// momentjs
+import moment from 'moment'
+Vue.prototype.$moment = moment;
+moment.locale('zh-cn'); // 汉化
+
 // 全局Loading
 const showLoading = () => {
   ElementUI.Loading.service({
@@ -34,11 +39,14 @@ const closeLoading = () => {
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 //Authorization - token
 axios.defaults.headers.common["token"] = localStorage.getItem('token');
+// 登录类型 1 - 管理员  2 - 老师理员
+axios.defaults.headers.common["tokentype"] = localStorage.getItem('type');
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
+  console.log(localStorage.getItem('token'))
   if(!localStorage.getItem('token')){
-    localStorage.clear();
-    router.push("/");
+    // localStorage.clear();
+    // router.push("/");
     ElementUI.Message.error("登录已失效，请重新登录");
   }
   if (config.method === 'post') {
@@ -61,8 +69,8 @@ axios.interceptors.response.use(function (response) {
     return response;
     // token失效  
   } else if (response.data.code == 401) {
-    localStorage.clear();
-    router.push("/");
+    // localStorage.clear();
+    // router.push("/");
     ElementUI.Message.error(response.data.message + ',请联系管理员!');
     closeLoading();
     return false;
@@ -94,7 +102,7 @@ Date.prototype.Format = function (fmt) {
   for (var k in o)
     if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
   return fmt;
-  // new Date(1542274800000).Format('yy-MM-dd hh:mm:ss');
+  // new Date(1542274800000).Format('yy-MM-dd hh:mm:ss');  // 用法
 }
 
 // axios - 请求

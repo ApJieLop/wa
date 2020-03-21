@@ -14,24 +14,14 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model.number="ruleForm.phone" placeholder="请填写手机号"></el-input>
       </el-form-item>
-      <el-form-item label="出生日期" prop="dateBirth">
+      <el-form-item label="宝宝月龄" prop="dateBirth">
         <el-date-picker
           style="width:100%;"
           v-model="ruleForm.dateBirth"
           type="date"
-          placeholder="选择日期"
+          placeholder="选择宝宝月龄日期"
+          @change="monthGet"
         ></el-date-picker>
-      </el-form-item>
-
-      <el-form-item label="选择试卷" prop="sj">
-        <el-select v-model="ruleForm.sj" filterable placeholder="请选择" style="width:100%;">
-          <el-option
-            v-for="item in options"
-            :key="item.id"
-            :label="item.juan_title"
-            :value="item.id"
-          ></el-option>
-        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -59,10 +49,10 @@ export default {
     };
     return {
       ruleForm: {
-        name: "",
-        phone: "",
-        dateBirth: "",
-        sj: ""
+        name: "", // 客户名称
+        phone: "", // 电话
+        dateBirth: "", // 出生日期
+        sj:"" // 月份
       },
       options: [],
       rules: {
@@ -72,11 +62,10 @@ export default {
           {
             type: "date",
             required: true,
-            message: "请选择日期",
+            message: "请选择宝宝月龄",
             trigger: "change"
           }
         ],
-        sj: [{ required: true, message: "请选择试卷", trigger: "change" }]
       }
     };
   },
@@ -84,8 +73,7 @@ export default {
     // 开始答题
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid) {
-          this.ruleForm.dateBirth.getTime() / 1000;
+        if (valid) {         
           this.$router.push({
             path: "/topic",
             query: {
@@ -93,37 +81,36 @@ export default {
                 jiazhang_name: this.ruleForm.name,
                 jiazhang_mobile: this.ruleForm.phone,
                 birthday: this.ruleForm.dateBirth.getTime() / 1000,
-                juan_id: this.ruleForm.sj
+                sj: this.ruleForm.sj
               })
             }
           });
         }
       });
     },
-    // 获取题
-    gerTopic() {
-      let type = "post";
-      let url = "url1/juan/alllist";
-      let data = {
-        juan_title: "",
-        page: 1
-      };
-      this.myAjax(type, url, data, res => {
-        this.options = res.data.data[0];
-        for (let i = 0; i < this.options.length; i++) {
-          this.options[i].id = String(this.options[i].id);
-        }
-      });
-    },
     // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+    // 点击时间获取试卷id
+    monthGet() {
+      let date1 = new Date(new Date(new Date()).getTime())
+        .Format("yy-MM-dd")
+        .split("-"); //例：将2020-12-21 的-去掉
+      date1 = parseInt(date1[0]) * 12 + parseInt(date1[1]); //将字符串转换为数字格式
+      let date2 = new Date(new Date(this.ruleForm.dateBirth).getTime())
+        .Format("yy-MM-dd")
+        .split("-");
+      date2 = parseInt(date2[0]) * 12 + parseInt(date2[1]);
+      if(Math.abs(date1 - date2) == 0){
+        this.ruleForm.sj = 1;    
+      } else {
+        this.ruleForm.sj = Math.abs(date1 - date2); 
+      }
     }
   },
   mounted() {},
-  created() {
-    this.gerTopic();
-  }
+  created() {}
 };
 </script>
   

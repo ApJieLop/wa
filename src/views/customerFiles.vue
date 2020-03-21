@@ -173,6 +173,9 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="初始课时" prop="lesson_time" style="width:4rem;">
+          <el-input v-model="addData.lesson_time" placeholder="请输入初始课时"></el-input>
+        </el-form-item>    
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible1 = false">取 消</el-button>
@@ -223,7 +226,8 @@ export default {
         f_culture: "", // 父亲学历
         m_name: "", // 母亲姓名
         m_phone: "", // 母亲手机号
-        m_culture: "" // 母亲学历
+        m_culture: "", // 母亲学历
+        lesson_time:"" // 原始课时
       },
       // 建新档案 - 数据校验
       rules: {
@@ -281,7 +285,11 @@ export default {
         ],
         m_culture: [
           { required: true, message: "请输入母亲姓名", trigger: "blur" }
-        ]
+        ],
+        lesson_time: [
+          { required: true, message: "请输入初始课时", trigger: "blur" }
+        ],
+        
       },
       // 添加课时
       addCurriculum: {
@@ -301,7 +309,11 @@ export default {
       },
       // dialog
       dialogVisible1: false,
-      dialogVisible2: false
+      dialogVisible2: false,
+      form:{
+        startDate:"2020-06-02",
+        endDate:'2020-05-03',
+      }
     };
   },
   methods: {
@@ -348,8 +360,7 @@ export default {
         let data = {
           id: row.id
         };
-        this.myAjax(type, url, data, res => {
-          console.log(res.data.data);
+        this.myAjax(type, url, data, res => {        
           this.addData.id = res.data.data.id;
           this.addData.b_name = res.data.data.user_name; // 宝宝名称
           this.addData.b_gender = String(res.data.data.user_sex); // 宝宝性别
@@ -373,6 +384,7 @@ export default {
           this.addData.m_name = res.data.data.mother_name; // 母亲姓名
           this.addData.m_phone = res.data.data.mother_mobile; // 母亲手机号
           this.addData.m_culture = res.data.data.mother_wenhua; // 母亲学历
+          this.addData.lesson_time = res.data.data.lesson_time; // 初始课时
         });
       } else {
         Object.keys(this.addData).forEach(key => (this.addData[key] = ""));
@@ -402,7 +414,8 @@ export default {
               father_wenhua: this.addData.f_culture, // 父亲学历
               mother_name: this.addData.m_name, // 母亲姓名
               mother_mobile: this.addData.m_phone, // 母亲手机号
-              mother_wenhua: this.addData.m_culture // 母亲学历
+              mother_wenhua: this.addData.m_culture, // 母亲学历
+              lesson_time: this.addData.lesson_time // 初始课时
             };
             this.myAjax(type, url, data, res => {
               this.createdData(1);
@@ -426,7 +439,8 @@ export default {
               father_wenhua: this.addData.f_culture, // 父亲学历
               mother_name: this.addData.m_name, // 母亲姓名
               mother_mobile: this.addData.m_phone, // 母亲手机号
-              mother_wenhua: this.addData.m_culture // 母亲学历
+              mother_wenhua: this.addData.m_culture, // 母亲学历
+              lesson_time: this.addData.lesson_time // 初始课时
             };
             this.myAjax(type, url, data, res => {
               this.createdData(1);
@@ -469,9 +483,9 @@ export default {
       this.$refs[addCurriculum].validate(valid => {
         if (valid) {
           let type = "post";
-          let url = "url1/lesson/lessiontime";
+          let url = "url1/user/lessiontime";
           let data = {
-            id: this.addCurriculum.id,
+            uid: this.addCurriculum.id,
             lesson_time:this.addCurriculum.num
           };
           console.log(data)

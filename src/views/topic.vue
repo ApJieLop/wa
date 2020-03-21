@@ -30,6 +30,7 @@ export default {
   name: "topic",
   data() {
     return {
+      id:'', // 试卷id
       x: 0, // 当前题目号，用来显示当前题
       t: "", // 所有题
       l: "", // 题目总长度，用来判定是否为最后一题
@@ -51,10 +52,10 @@ export default {
         let data = {
           test_content: JSON.stringify(this.s),
           teacher_id: localStorage.getItem("uid"),
+          juan_id: this.id,
           jiazhang_name: JSON.parse(this.$route.query.info).jiazhang_name,
           jiazhang_mobile: JSON.parse(this.$route.query.info).jiazhang_mobile,
-          birthday: JSON.parse(this.$route.query.info).birthday,
-          juan_id: JSON.parse(this.$route.query.info).juan_id
+          birthday: JSON.parse(this.$route.query.info).birthday         
         };
         this.myAjax(type, url, data, res => {
           this.f = res.data.data.score;
@@ -70,16 +71,18 @@ export default {
       let type = "post";
       let url = "url1/juan/get";
       let data = {
-        id: JSON.parse(this.$route.query.info).juan_id
+        juan_month: JSON.parse(this.$route.query.info).sj
       };
+       console.log(data)
       this.myAjax(type, url, data, res => {
-        this.t = JSON.parse(res.data.data.juan_content);
-        this.l = this.t.length;
-      });
+        console.log(res)
+        // this.t = JSON.parse(res.data.data.juan_content);
+        // this.l = this.t.length;
+      });  
     },
     // 继续答题
     curriculumDetermine() {
-      this.$router.push("/evaluationSubject");
+      this.$router.push("/evaluationSubject");   
     }
   },
   mounted() {},

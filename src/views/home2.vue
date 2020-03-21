@@ -482,7 +482,8 @@ export default {
       }
     })($, window, document);
   },
-  created() {}
+  created() {
+  }
 };
 </script>
   
