@@ -6,11 +6,8 @@
       <el-tab-pane label="课程签到" name="curriculumAdministration">
         <!-- 检索 -->
         <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="课程名称" prop="name1">
-            <el-input v-model="ruleForm.name1" placeholder="请输入课程名称"></el-input>
-          </el-form-item>
-          <el-form-item label="客户名称" prop="name2">
-            <el-input v-model="ruleForm.name2" placeholder="请输入客户名称"></el-input>
+          <el-form-item label="客户名称" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入课程名称"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
@@ -23,39 +20,46 @@
             <template slot-scope="scope">{{ scope.$index+1 }}</template>
           </el-table-column>
           <el-table-column
-            prop="a"
+            prop="user_name"
             show-overflow-tooltip
             align="center"
-            label="学员名称"
+            label="客户名称"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="b"
-            show-overflow-tooltip
-            align="center"
-            label="课程名称"
-            min-width="120"
-          ></el-table-column>
-          <el-table-column
-            prop="c"
+            prop="lesson_time"
             show-overflow-tooltip
             align="center"
             label="剩余课时"
-            min-width="80"
+            min-width="120"
           ></el-table-column>
           <el-table-column
-            prop="d"
+            prop="ceping_count"
+            show-overflow-tooltip
+            align="center"
+            label="已测评"
+            min-width="80"
+          >
+            <template slot-scope="scope">
+              <font
+                @click="subjectTested(scope.row.id)"
+                color="#2cb4df"
+                style="display: block;cursor:pointer;"
+              >{{ scope.row.ceping_count }}</font>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="e"
             show-overflow-tooltip
             align="center"
             label="开课日期"
             min-width="80"
           ></el-table-column>
-          <el-table-column prop="e" show-overflow-tooltip align="center" label="已测评" min-width="80"></el-table-column>
           <el-table-column
-            prop="f"
+            prop="create_time"
             show-overflow-tooltip
             align="center"
-            label="答题数量"
+            label="创建时间"
             min-width="80"
           ></el-table-column>
           <el-table-column align="center" label="操作" min-width="80" show-overflow-tooltip>
@@ -68,12 +72,9 @@
     </el-tabs>
     <!-- 分页 -->
     <el-pagination
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page.sync="fenYe.currentPage"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="fenYe.size"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="total, prev, pager, next, jumper"
       :total="fenYe.total"
     ></el-pagination>
     <!-- dialog -->
@@ -102,12 +103,11 @@ export default {
     return {
       // 当前的tap
       activeName: "curriculumAdministration",
-      // 选中当前列表的id
-      zid: "",
+      // 用户id
+      uid: "",
       // 检索内容
       ruleForm: {
-        name1: "",
-        name2: ""
+        name: ""
       },
       // 课程签到
       informantType: "",
@@ -162,57 +162,11 @@ export default {
         }
       ],
       // 列表数据
-      tableData: [
-        {
-          id: 1,
-          bid: 1,
-          a: "2016-05-02",
-          b: "胜多负少的",
-          c: "18332521721",
-          d: "上海市",
-          e: "上海市",
-          f: "上海市",
-          j: "zjf18332521721"
-        },
-        {
-          id: 2,
-          bid: 2,
-          a: "2016-05-02",
-          b: "胜多负少的",
-          c: "18332521721",
-          d: "上海市",
-          e: "上海市",
-          f: "上海市",
-          j: "zjf18332521721"
-        },
-        {
-          id: 3,
-          bid: 3,
-          a: "2016-05-02",
-          b: "胜多负少的",
-          c: "18332521721",
-          d: "上海市",
-          e: "上海市",
-          f: "上海市",
-          j: "zjf18332521721"
-        },
-        {
-          id: 4,
-          bid: 4,
-          a: "2016-05-02",
-          b: "胜多负少的",
-          c: "18332521721",
-          d: "上海市",
-          e: "上海市",
-          f: "上海市",
-          j: "zjf18332521721"
-        }
-      ],
+      tableData: [],
       // 分页
       fenYe: {
         currentPage: 1, // 当前页数
-        size: 10, // 每页多少条
-        total: 100 // 共多少页
+        total: null // 共多少页
       },
       // dialog
       dialogVisible2: false
@@ -221,37 +175,21 @@ export default {
   methods: {
     // 查询
     submitForm() {
-      this.createdData(1, this.fenYe.size);
+      this.createdData(1);
     },
     // 重置
     resetForm(ruleForm) {
       this.$refs[ruleForm].resetFields();
-      this.createdData(1, this.fenYe.size);
-    },
-    // 每页多少条
-    handleSizeChange(val) {
-      this.createdData(1, val);
+      this.createdData(1);
     },
     // 当前页数
     handleCurrentChange(val) {
-      this.createdData(val, this.fenYe.size);
-    },
-    // 获取所有课程
-    getCurriculum() {
-      let type = "";
-      let url = "";
-      let data = {};
-      this.myAjax(type, url, data, res => {
-        if (res.data == 200) {
-          this.informantTypeData = res.data;
-        }
-      });
+      this.createdData(val);
     },
     // 课程签到
     signIn(row) {
       this.dialogVisible2 = true;
-      this.zid = row.id;
-      console.log(this.zid);
+      this.uid = row.id;
     },
     // 课程签到 - 确定
     curriculumDetermine() {
@@ -259,19 +197,32 @@ export default {
       console.log(this.informantType);
     },
     // 初始化列表数据
-    createdData(page, pages) {
-      let type = "";
-      let url = "";
-      let data = {};
+    createdData(page) {
+      let type = "post";
+      let url = "url1/user/lists";
+      let data = {
+        user_name: this.ruleForm.name,
+        page: page
+      };
       this.myAjax(type, url, data, res => {
-        if (res.data == 200) {
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list;
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData[i].create_time = new Date(
+            this.tableData[i].create_time * 1000
+          ).Format("yy-MM-dd");
         }
       });
     }
   },
   created() {
-    // this.createdData(1,this.fenYe.size);
-    // this.getCurriculum();
+    this.createdData(1);
+    // setTimeout(function() {
+    //   _this.$nextTick(() => {
+    //     console.log(_this.tableData);
+    //   });
+    //   _this.ascriptionTeacher();
+    // }, 500);
   },
   mounted() {}
 };

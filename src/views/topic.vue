@@ -14,9 +14,11 @@
     </div>
     <!-- dialog -->
     <el-dialog title="测评结果" :visible.sync="dialogVisible2" width="60%">
-      <p>试卷名称:{{ f }}</p>
+      <p>试卷名称:{{ b }}</p>
       <br />
-      <p>答题分数:{{ text }}</p>
+      <p>答题分数:{{ f }}</p>
+      <br />
+      <p>测评结果:{{ text }}</p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="curriculumDetermine">继续答题</el-button>
         <el-button type="primary" @click="curriculumDetermine">我知道了</el-button>
@@ -36,7 +38,8 @@ export default {
       l: "", // 题目总长度，用来判定是否为最后一题
       s: [], // 所有答案
       dialogVisible2: false, // 结果 - loading
-      f:'', //  答题结果 - 分数
+      b:"", // 试卷名称
+      f:"", //  答题结果 - 分数
       text:"" // 答题结果 - 文字
     };
   },
@@ -58,6 +61,7 @@ export default {
           birthday: JSON.parse(this.$route.query.info).birthday         
         };
         this.myAjax(type, url, data, res => {
+          this.b = res.data.data.juan_title;
           this.f = res.data.data.score;
           this.text = res.data.data.text;
           this.dialogVisible2 = true;
@@ -73,11 +77,9 @@ export default {
       let data = {
         juan_month: JSON.parse(this.$route.query.info).sj
       };
-       console.log(data)
       this.myAjax(type, url, data, res => {
-        console.log(res)
-        // this.t = JSON.parse(res.data.data.juan_content);
-        // this.l = this.t.length;
+        this.t = JSON.parse(res.data.data.juan_content);
+        this.l = this.t.length;
       });  
     },
     // 继续答题

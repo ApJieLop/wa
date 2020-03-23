@@ -20,24 +20,24 @@
             <template slot-scope="scope">{{ scope.$index+1 }}</template>
           </el-table-column>
           <el-table-column
-            prop="a"
+            prop="user_name"
             show-overflow-tooltip
             align="center"
             label="客户名称"
             min-width="150"
           ></el-table-column>
           <el-table-column
-            prop="b"
+            prop="lesson_time"
             show-overflow-tooltip
             align="center"
             label="剩余课时"
             min-width="80"
           ></el-table-column>
           <el-table-column
-            prop="c"
+            prop="ceping_count"
             show-overflow-tooltip
             align="center"
-            label="答题数量"
+            label="已测评"
             min-width="80"
           >
             <template slot-scope="scope">
@@ -45,14 +45,14 @@
                 @click="subjectTested(scope.row.id)"
                 color="#2cb4df"
                 style="display: block;"
-              >{{ scope.row.c }}</font>
+              >{{ scope.row.ceping_count }}</font>
             </template>
           </el-table-column>
           <el-table-column
-            prop="d"
+            prop="create_time"
             show-overflow-tooltip
             align="center"
-            label="上课日期"
+            label="创建时间"
             min-width="80"
           ></el-table-column>
         </el-table>
@@ -84,36 +84,7 @@ export default {
         name: ""
       },
       // 列表数据
-      tableData: [
-        {
-          id: 1,
-          a: "赵金福1",
-          b: 50,
-          c: 6,
-          d: "2020-01-05 12:00"
-        },
-        {
-          id: 2,
-          a: "赵金福1",
-          b: 50,
-          c: 6,
-          d: "2020-01-05 12:00"
-        },
-        {
-          id: 3,
-          a: "赵金福1",
-          b: 50,
-          c: 6,
-          d: "2020-01-05 12:00"
-        },
-        {
-          id: 4,
-          a: "赵金福1",
-          b: 50,
-          c: 6,
-          d: "2020-01-05 12:00"
-        }
-      ],
+      tableData: [],
       // 分页
       fenYe: {
         currentPage: 1, // 当前页数
@@ -144,20 +115,21 @@ export default {
         query: {
           id: id
         }
-      });     
+      });
     },
     // 初始化列表数据
     createdData(page) {
       let type = "post";
-      let url = "url1/ceping/userlist";
+      let url = "url1/user/lists";
       let data = {
-        page:page
+        page: page
       };
       if(this.id){
-        data.id = this.id;
+        data.teacher_id = this.id;
       }
       this.myAjax(type, url, data, res => {
-        console.log(res.data)
+        this.fenYe.total = res.data.data.page;
+        this.tableData = res.data.data.list;
       });
     }
   },

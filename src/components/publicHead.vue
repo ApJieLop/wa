@@ -68,9 +68,9 @@ export default {
           path: "/teacherAdministration"
         },
         {
-          img: require("../../public/static/images/z8.png"),
+          img: require("../../public/static/images/z2.png"),
           text: "课程管理",
-          path: "/scurriculumAdministration"
+          path: "/curriculumAdministration"
         }
       ],
       // 老师

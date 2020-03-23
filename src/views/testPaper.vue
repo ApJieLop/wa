@@ -10,6 +10,9 @@
       <el-form-item prop="testPaperNanme" label="试卷名称">
         <el-input v-model="dynamicValidateForm.testPaperNanme" placeholder="请输入试卷名称"></el-input>
       </el-form-item>
+      <el-form-item prop="monthSize" label="适合月龄">
+        <el-input v-model="dynamicValidateForm.monthSize" placeholder="请输入适合几个的月婴儿/列子：1,类型Number/String"></el-input>
+      </el-form-item>
       <el-form-item
         v-for="(domain, index) in dynamicValidateForm.domains"
         :label="'第' + (index+1) +'题'"
@@ -146,6 +149,7 @@ export default {
       testPaperId: "", // 试卷id
       dynamicValidateForm: {// 试卷内容
         testPaperNanme: "", // 试卷名称
+        monthSize:"", // 适合几个月婴儿
         fractionDetermine: [
           // 分数判定
           {
@@ -217,6 +221,7 @@ export default {
         let data = {
           id: this.testPaperId,
           juan_title: this.dynamicValidateForm.testPaperNanme,
+          juan_month: this.dynamicValidateForm.monthSize,
           juan_content: JSON.stringify(this.dynamicValidateForm.domains),
           juan_message: JSON.stringify(
             this.dynamicValidateForm.fractionDetermine
@@ -233,6 +238,7 @@ export default {
         let url = "url1/juan/add";
         let data = {
           juan_title: this.dynamicValidateForm.testPaperNanme,
+          juan_month: this.dynamicValidateForm.monthSize,
           juan_content: JSON.stringify(this.dynamicValidateForm.domains),
           juan_message: JSON.stringify(
             this.dynamicValidateForm.fractionDetermine
@@ -308,6 +314,7 @@ export default {
       };
       this.myAjax(type, url, data, res => {
         this.dynamicValidateForm.testPaperNanme = res.data.data.juan_title;
+        this.dynamicValidateForm.monthSize = res.data.data.juan_month;
         this.dynamicValidateForm.domains = JSON.parse(
           res.data.data.juan_content
         );

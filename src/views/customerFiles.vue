@@ -310,10 +310,6 @@ export default {
       // dialog
       dialogVisible1: false,
       dialogVisible2: false,
-      form:{
-        startDate:"2020-06-02",
-        endDate:'2020-05-03',
-      }
     };
   },
   methods: {
