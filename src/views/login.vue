@@ -113,7 +113,9 @@ export default {
                     localStorage.setItem("type", 1);
                   } else {
                     ElementUI.Loading.service({}).close();
-                    this.$message.warning(res.data.message);
+                    _this.$message.warning(res.data.message);
+                    _this.ruleForm.verificationCode = '';
+                    _this.ghyzm();
                   }
                 });
                 // 老师登录
@@ -141,7 +143,9 @@ export default {
                     localStorage.setItem("type", 2);
                   } else {
                     ElementUI.Loading.service({}).close();
-                    this.$message.warning(res.data.message);
+                    _this.$message.warning(res.data.message);
+                    _this.ruleForm.verificationCode = '';
+                    _this.ghyzm();
                   }
                 });
               }
