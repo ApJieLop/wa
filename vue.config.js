@@ -44,7 +44,7 @@ module.exports = {
         open: true, //配置自动启动浏览器
         proxy: {
             '/url1': {
-                target: 'http://www.tj-hwyl.com/api/index', // 请求接口的地址               
+                target: 'http://www.tj-hwyl.com/api/index/', // 请求接口的地址               
                 ws: false, // 代理websockets             
                 changeOrigin: true, // 将主机标头的原点更改为目标URL
                 pathRewrite: {

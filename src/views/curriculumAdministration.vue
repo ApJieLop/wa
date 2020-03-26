@@ -92,8 +92,8 @@
     <el-dialog title="签到记录" :visible.sync="dialogVisible1" width="80%" :before-close="closeDialogVisible1">
       <el-table :data="record" stripe highlight-current-row style="width: 100%">
         <el-table-column label="序号" type="index" align="center" min-width="50"></el-table-column>
-        <el-table-column prop="date" label="签到日期" align="center" min-width="150"></el-table-column>
-        <el-table-column prop="name" label="老师姓名" align="center" min-width="150"></el-table-column>
+        <el-table-column prop="create_time" label="签到日期" align="center" min-width="150"></el-table-column>
+        <el-table-column prop="teacher_name" label="老师姓名" align="center" min-width="150"></el-table-column>
       </el-table>
       <!-- 分页 -->
       <el-pagination
@@ -148,60 +148,11 @@ export default {
       stime: "",
       // 客户id
       uid: "",
-      record: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        },{
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        },{
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ],
+      record: [],
       // 分页
       fenYe1: {
         currentPage: 1, // 当前页数
-        total: 500 // 共多少页
+        total: null // 共多少页
       }
     };
   },
@@ -257,20 +208,20 @@ export default {
       this.uid = row
       this.dialogVisible1 = true;
       let type = "post";
-      let url = "";
+      let url = "url1/lesson/signlist";
       let data = {
         uid: this.uid,
         page: this.fenYe1.page
       };
-      // this.myAjax(type, url, data, res => {
-        // this.fenYe1.total = res.data.data.page;
-        // this.record = res.data.data.list;
-        // for (let i = 0; i < this.tableData.length; i++) {
-        //   this.tableData[i].create_time = new Date(
-        //     this.tableData[i].create_time * 1000
-        //   ).Format("yy-MM-dd");
-        // }
-      // });
+      this.myAjax(type, url, data, res => {
+        this.fenYe1.total = res.data.data.page;
+        this.record = res.data.data.list;
+        for (let i = 0; i < this.record.length; i++) {
+          this.record[i].create_time = new Date(
+            this.record[i].create_time * 1000
+          ).Format("yy-MM-dd");
+        }
+      });
     },
     // 关闭签到记录对话框
     closeDialogVisible1(){
