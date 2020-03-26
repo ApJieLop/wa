@@ -17,12 +17,7 @@
         <div class="z1_1" @click="scurriculumAdministration">
           <div class="z1_1_left">
             <img src="../../public/static/images/z2.png" alt />
-            <p>
-              课程管理
-              <br />
-              <span>100</span>
-              课时
-            </p>
+            <p style="line-height: .9rem;margin-top: 0;">课程管理</p>
           </div>
           <div class="z1_1_right">查看</div>
         </div>
@@ -79,6 +74,7 @@
   <script>
 import $ from "jquery";
 // import "../../public/static/js/calendar.js";
+require('../../public/static/js/font')
 export default {
   name: "home2",
   data() {
@@ -515,8 +511,8 @@ export default {
           img {
             display: block;
             float: left;
-            margin: 0.25rem 0.05rem 0 0.15rem;
-            width: 0.4rem;
+            margin: 0.3rem 0.05rem 0 0.15rem;
+            width: 0.3rem;
           }
           p {
             float: left;

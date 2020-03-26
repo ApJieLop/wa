@@ -173,9 +173,9 @@
     </el-dialog>
     <!-- dialog -->
     <el-dialog title="测评结果" :visible.sync="dialogVisible2" width="60%">
-      <p>试卷名称:{{ result.name }}</p>
+      <p style="text-align: left;">试卷名称:{{ result.name }}</p>
       <br>
-      <p>答题分数:{{ result.num }}</p>
+      <p>答题分数:<span style="color:#409EFF;font-size:18px;margin-left:15px;">{{ result.num }}</span></p>
     </el-dialog>
   </div>
 </template>

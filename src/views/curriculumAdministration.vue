@@ -49,12 +49,16 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="e"
+            prop="sign_time"
             show-overflow-tooltip
             align="center"
-            label="开课日期"
+            label="上次签到"
             min-width="80"
-          ></el-table-column>
+          >
+            <template slot-scope="scope">
+              <font>{{ scope.row.sign_time?scope.row.sign_time:'未开始' }}</font>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="create_time"
             show-overflow-tooltip
@@ -62,9 +66,16 @@
             label="创建时间"
             min-width="80"
           ></el-table-column>
-          <el-table-column align="center" label="操作" min-width="80" show-overflow-tooltip>
+          <el-table-column align="center" label="操作" min-width="150" show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button type="text" @click="signIn(scope.row)">课程签到</el-button>
+              <el-button
+                type="text"
+                v-if="scope.row.lesson_time == 0"
+                @click="signIn(scope.row)"
+                style="color:#E6A23C;margin-left: 0!important;"
+              >课程签到</el-button>
+              <el-button type="text" v-else @click="signIn(scope.row)">课程签到</el-button>
+              <el-button type="text" @click="signInRecord(scope.row.id),1">签到记录</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -78,19 +89,31 @@
       :total="fenYe.total"
     ></el-pagination>
     <!-- dialog -->
-    <el-dialog title="课程签到" :visible.sync="dialogVisible2" width="60%">
-      <el-radio-group v-model="informantType" style="text-align: left;">
-        <el-radio
-          style="width: 45%;height: .4rem;text-align: center;"
-          v-for="item in informantTypeData"
-          :key="item.id"
-          :value="item.id"
-          :label="item.id"
-        >{{item.title}}</el-radio>
-      </el-radio-group>
+    <el-dialog title="签到记录" :visible.sync="dialogVisible1" width="80%" :before-close="closeDialogVisible1">
+      <el-table :data="record" stripe highlight-current-row style="width: 100%">
+        <el-table-column label="序号" type="index" align="center" min-width="50"></el-table-column>
+        <el-table-column prop="date" label="签到日期" align="center" min-width="150"></el-table-column>
+        <el-table-column prop="name" label="老师姓名" align="center" min-width="150"></el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <el-pagination
+        style="position: static;margin-top:15px;"
+        @current-change="handleCurrentChange1"
+        :current-page.sync="fenYe1.currentPage1"
+        layout="total, prev, pager, next"
+        :total="fenYe1.total"
+      ></el-pagination>
+      <el-button type="primary" @click="closeDialogVisible1" style="float: right;margin-top:15px;">我知道了</el-button>
+    </el-dialog>
+    <!-- dialog -->
+    <el-dialog title="确定签到课时么？" :visible.sync="dialogVisible2" width="40%">
+      <p style="font-size:16px">
+        当前剩余课时
+        <span style="color:#409EFF;ont-size:28px">{{ stime }}</span>
+      </p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="curriculumDetermine">确 定</el-button>
+        <el-button type="primary" @click="curriculumDetermine">确定签到</el-button>
       </span>
     </el-dialog>
   </div>
@@ -111,56 +134,6 @@ export default {
       },
       // 课程签到
       informantType: "",
-      informantTypeData: [
-        {
-          id: 1,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 2,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 3,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 4,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 5,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 6,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 7,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 8,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 9,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 10,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 11,
-          title: "存在欺诈骗钱行为"
-        },
-        {
-          id: 12,
-          title: "存在欺诈骗钱行为"
-        }
-      ],
       // 列表数据
       tableData: [],
       // 分页
@@ -169,7 +142,67 @@ export default {
         total: null // 共多少页
       },
       // dialog
-      dialogVisible2: false
+      dialogVisible1: false,
+      dialogVisible2: false,
+      // 剩余课时
+      stime: "",
+      // 客户id
+      uid: "",
+      record: [
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        },{
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        },{
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        }
+      ],
+      // 分页
+      fenYe1: {
+        currentPage: 1, // 当前页数
+        total: 500 // 共多少页
+      }
     };
   },
   methods: {
@@ -186,15 +219,69 @@ export default {
     handleCurrentChange(val) {
       this.createdData(val);
     },
+    // 点击已测评数 - 跳转已测评
+    subjectTested(id) {
+      this.$router.push({
+        path: "/subjectTested",
+        query: {
+          id: id
+        }
+      });
+    },
     // 课程签到
     signIn(row) {
-      this.dialogVisible2 = true;
-      this.uid = row.id;
+      if (row.lesson_time == 0) {
+        this.$message.warning("您的课时已用完，请添加课时!");
+      } else {
+        this.dialogVisible2 = true;
+        this.uid = row.id;
+        this.stime = row.lesson_time;
+      }
     },
     // 课程签到 - 确定
     curriculumDetermine() {
-      this.dialogVisible2 = false;
-      console.log(this.informantType);
+      let type = "post";
+      let url = "url1/user/lessontime";
+      let data = {
+        uid: this.uid,
+        lesson_time: -1
+      };
+      this.myAjax(type, url, data, res => {
+        this.createdData(1);
+        this.$message.success("签到成功");
+        this.dialogVisible2 = false;
+      });
+    },
+    // 签到记录
+    signInRecord(row) {
+      this.uid = row
+      this.dialogVisible1 = true;
+      let type = "post";
+      let url = "";
+      let data = {
+        uid: this.uid,
+        page: this.fenYe1.page
+      };
+      // this.myAjax(type, url, data, res => {
+        // this.fenYe1.total = res.data.data.page;
+        // this.record = res.data.data.list;
+        // for (let i = 0; i < this.tableData.length; i++) {
+        //   this.tableData[i].create_time = new Date(
+        //     this.tableData[i].create_time * 1000
+        //   ).Format("yy-MM-dd");
+        // }
+      // });
+    },
+    // 关闭签到记录对话框
+    closeDialogVisible1(){
+      this.fenYe1.page = 1;
+      this.fenYe1.total = null;
+      this.dialogVisible1 = false;
+    },
+    // 签到记录 - 当前页数
+    handleCurrentChange1(val) {
+      this.fenYe1.page = val;
+      this.signInRecord(this.uid);
     },
     // 初始化列表数据
     createdData(page) {
@@ -224,11 +311,15 @@ export default {
     //   _this.ascriptionTeacher();
     // }, 500);
   },
-  mounted() {}
+  mounted() {},
+  watch: {}
 };
 </script>
   
  <style lang="less" scoped>
+ .curriculumAdministration /deep/ .el-dialog__body {
+   overflow: hidden;
+ }
 .curriculumAdministration {
   height: 100%;
   background: #fff;

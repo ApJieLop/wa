@@ -52,6 +52,7 @@
   
   <script>
 import $ from "jquery";
+require('../../public/static/js/font')
 export default {
   name: "home1",
   data() {

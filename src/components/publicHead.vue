@@ -2,7 +2,7 @@
   <!-- 公共头部 -->
   <div class="publicHead">
     <div class="top">
-      <h1>新生儿测评系统</h1>
+      <h1 @click="jumpHome" style="cursor:pointer;">{{ type==2?'婴幼儿测评系统平台':'婴儿测评管理系统' }}</h1>
       <!-- 管理员导航 -->
       <ul v-if="type ==1">
         <li v-for="(item,index) in navigation1" :key="index" @click="jump(item.path)">
@@ -41,8 +41,9 @@
     </div>
   </div>
 </template>
-  
+
   <script>
+require('../../public/static/js/font')
 export default {
   name: "publicHead",
   data() {
@@ -99,6 +100,15 @@ export default {
     };
   },
   methods: {
+    // 点击logo / 文字跳转到对应的首页
+    jumpHome(){
+      let tpye = localStorage.getItem('type');
+      if(tpye ==1 ){
+        this.$router.push('/home1')
+      }else if(tpye ==2 ){
+        this.$router.push('/home2')
+      }
+    },
     // 导航跳转
     jump(path) {
       this.$router.push({

@@ -46,8 +46,7 @@ axios.interceptors.request.use(function(config) {
 		config.headers.token= localStorage.getItem('token');
 		// 登录类型 1 - 管理员  2 - 老师理员
 		config.headers.tokentype = localStorage.getItem('type');
-	}
-	if(!localStorage.getItem('token')) {
+	} else {
 		localStorage.clear();
 		router.push("/");
 		ElementUI.Message.error("登录已失效，请重新登录");

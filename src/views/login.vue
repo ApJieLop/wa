@@ -4,7 +4,7 @@
     <div class="z1">
       <div class="l"></div>
       <div class="r">
-        <h1>婴幼儿测评系统平台</h1>
+        <h1>{{ at==1?'婴幼儿测评系统平台':'婴儿测评管理系统' }}</h1>
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
           <el-form-item prop="accountNumber">
             <img class="lb" src="../../public/static/images/lb_3.png" alt />
@@ -14,22 +14,24 @@
             <img class="lb" src="../../public/static/images/lb_1.png" alt />
             <el-input v-model="ruleForm.Password" placeholder="请输入密码"></el-input>
           </el-form-item>
-          <!-- <el-form-item prop="verificationCode">
+          <el-form-item prop="verificationCode">
             <img class="lb" src="../../public/static/images/lb_2.png" alt />
             <el-input
               v-model="ruleForm.verificationCode"
               placeholder="请输入验证码"
               style="width: 60%;float: left;"
             ></el-input>
-            <img :src="yzmSrc" style="width: 25%;height:.4rem;margin: 0 2%;" alt />
-            <img
-              src="../../public/static/images/login_3.png"
-              style="width: 11%;height:.4rem;float: right;"
-              @click="ghyzm"
-              alt
-            />
-          </el-form-item>-->
-          <el-form-item>
+            <el-tooltip class="item" effect="light" content="点击更新" placement="bottom">
+              <p class="yzm" @click="ghyzm" v-loading="loading">
+                <span>{{ num1 }}</span>
+                <span>{{ fh }}</span>
+                <span>{{ num2 }}</span>
+                <span>=</span>
+                <span>?</span>
+              </p>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item style="margin-bottom:0;">
             <el-button type="primary" class="dl" @click="submitForm('ruleForm')">登录</el-button>
           </el-form-item>
           <el-form-item class="AdministratorsTeacher">
@@ -46,11 +48,11 @@
 import $ from "jquery";
 import Qs from "qs";
 import ElementUI from "element-ui";
+require("../../public/static/js/font");
 export default {
   name: "login",
   data() {
     return {
-      // yzmSrc: "http://www.tj-hwyl.com/index/base/captcha_img",
       ruleForm: {
         accountNumber: "",
         Password: "",
@@ -62,78 +64,91 @@ export default {
           { required: true, message: "请输入用户名", trigger: "blur" }
         ],
         Password: [{ required: true, message: "请输入密码", trigger: "blur" }]
-        // verificationCode: [
-        //   { required: true, message: "请输入验证码", trigger: "blur" }
-        // ]
-      }
+      },
+      loading: false,
+      num1: "", // 第一个数
+      num2: "", // 第二个数
+      fh: "", // 验证码符号  +  -  *  /
+      yzms: "" // 正确的验证码
     };
   },
   // 是件集合
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
+        let _this = this;
         if (valid) {
-          let _this = this;
-          ElementUI.Loading.service({
-            fullscreen: true,
-            background: "rgba(0,0,0,.4)"
-          });
-          // 管理员登录
-          if (_this.at == 2) {
-            let instance = this.$axios.create();
-            instance({
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              method: "post",
-              url: "url1/admin/login",
-              data: Qs.stringify({
-                admin_name: _this.ruleForm.accountNumber,
-                admin_password: _this.ruleForm.Password
-              })
-            }).then(res => {
-              if(res.data.code ==1){
-                setTimeout(function() {
-                ElementUI.Loading.service({}).close();
-                  _this.$router.push("/home1");
-                }, 1500);              
-                localStorage.setItem('uid', res.data.data.id);
-                localStorage.setItem('uname', res.data.data.admin_name);
-                localStorage.setItem('token', res.data.data.token);
-                localStorage.setItem('type', 1);              
+          if (_this.ruleForm.verificationCode) {
+            if (Number(_this.ruleForm.verificationCode) != _this.yzms) {
+              _this.ruleForm.verificationCode = "";
+              _this.$message.warning("验证码有误,请重新填写");
+              return false;
+            } else {
+              ElementUI.Loading.service({
+                fullscreen: true,
+                background: "rgba(0,0,0,.4)"
+              });
+              // 管理员登录
+              if (_this.at == 2) {
+                let instance = this.$axios.create();
+                instance({
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  method: "post",
+                  url: "url1/admin/login",
+                  data: Qs.stringify({
+                    admin_name: _this.ruleForm.accountNumber,
+                    admin_password: _this.ruleForm.Password
+                  })
+                }).then(res => {
+                  if (res.data.code == 1) {
+                    setTimeout(function() {
+                      ElementUI.Loading.service({}).close();
+                      _this.$router.push("/home1");
+                    }, 1500);
+                    localStorage.setItem("uid", res.data.data.id);
+                    localStorage.setItem("uname", res.data.data.admin_name);
+                    localStorage.setItem("token", res.data.data.token);
+                    localStorage.setItem("type", 1);
+                  } else {
+                    ElementUI.Loading.service({}).close();
+                    this.$message.warning(res.data.message);
+                  }
+                });
+                // 老师登录
               } else {
-                ElementUI.Loading.service({}).close();
-                this.$message.warning(res.data.message);
-              }             
-            });
-          // 老师登录
+                let instance = this.$axios.create();
+                instance({
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  method: "post",
+                  url: "url1/teacher/login",
+                  data: Qs.stringify({
+                    teacher_name: _this.ruleForm.accountNumber,
+                    teacher_password: _this.ruleForm.Password
+                  })
+                }).then(res => {
+                  if (res.data.code == 1) {
+                    setTimeout(function() {
+                      ElementUI.Loading.service({}).close();
+                      _this.$router.push("/home2");
+                    }, 1500);
+                    localStorage.setItem("uid", res.data.data.id);
+                    localStorage.setItem("uname", res.data.data.teacher_name);
+                    localStorage.setItem("token", res.data.data.token);
+                    localStorage.setItem("type", 2);
+                  } else {
+                    ElementUI.Loading.service({}).close();
+                    this.$message.warning(res.data.message);
+                  }
+                });
+              }
+            }
           } else {
-            let instance = this.$axios.create();
-            instance({
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              method: "post",
-              url: "url1/teacher/login",
-              data: Qs.stringify({
-                teacher_name: _this.ruleForm.accountNumber,
-                teacher_password: _this.ruleForm.Password
-              })
-            }).then(res => {
-               if(res.data.code ==1){
-                setTimeout(function() {
-                ElementUI.Loading.service({}).close();
-                  _this.$router.push("/home2");
-                }, 1500);
-                localStorage.setItem('uid', res.data.data.id);
-                localStorage.setItem('uname', res.data.data.teacher_name);
-                localStorage.setItem('token', res.data.data.token);
-                localStorage.setItem('type', 2);
-              } else {
-                ElementUI.Loading.service({}).close();
-                this.$message.warning(res.data.message);
-              }          
-            });
+            _this.$message.warning("请填写验证码");
+            return false;
           }
         }
       });
@@ -151,19 +166,46 @@ export default {
     // 更新验证码
     ghyzm() {
       let _this = this;
-      _this.yzmSrc = "";
+      _this.ruleForm.verificationCode = "";
+      let num1 = Math.ceil(Math.random() * 10);
+      let num2 = Math.ceil(Math.random() * 10);
+      let num3 = Math.ceil(Math.random() * 3);
+      _this.num1 = num1;
+      _this.num2 = num2;
+      if (num3 == 1) {
+        _this.fh = "+";
+        _this.yzms = num1 + num2;
+      } else if (num3 == 2) {
+        _this.fh = "-";
+        if (num1 < num2) {
+          _this.yzms = num2 - num1;
+          _this.num1 = num2;
+          _this.num2 = num1;
+        } else {
+          _this.yzms = num1 - num2;
+        }
+      } else if (num3 == 3) {
+        _this.fh = "*";
+        _this.yzms = num1 * num2;
+      } else {
+        _this.fh = "+";
+        _this.yzms = num1 + num2;
+      }
+      _this.loading = true;
       setTimeout(function() {
-        _this.yzmSrc = "http://www.tj-hwyl.com/index/base/captcha_img";
-      }, 10);
+        _this.loading = false;
+      }, 1000);
     }
   },
-  mounted() {},
+  mounted() {
+    this.ghyzm();
+  },
   // 初始化数据
   created() {}
 };
 </script>
   
-  <style lang="less" scoped>
+<style lang="less" scoped>
 .login {
   height: 100%;
   background: url(../../public/static/images/login_1.png) center no-repeat
@@ -212,6 +254,19 @@ export default {
         .AdministratorsTeacher {
           text-align: right;
         }
+        .yzm {
+          width: 35%;
+          float: right;
+          line-height: 0.4rem;
+          color: #e6a23c;
+          letter-spacing: 0.06rem;
+          border-radius: 0.04rem;
+          background: url(../../public/static/images/yzm.jpg) center no-repeat
+            no-repeat;
+          background-size: 100% 100%;
+          font-size: 0.2rem;
+          cursor: pointer;
+        }
       }
     }
   }
@@ -230,7 +285,7 @@ export default {
   line-height: 0 !important;
 }
 .el-form-item {
-  margin-bottom: 0.22rem;
+  margin-bottom: 0.18rem;
 }
 .login /deep/ .el-input__inner {
   height: 0.4rem !important;
