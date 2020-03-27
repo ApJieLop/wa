@@ -5,19 +5,20 @@
       :model="dynamicValidateForm"
       ref="dynamicValidateForm"
       label-width="100px"
-      class="demo-dynamic"
-    >
+      class="demo-dynamic">
       <el-form-item prop="testPaperNanme" label="试卷名称">
         <el-input v-model="dynamicValidateForm.testPaperNanme" placeholder="请输入试卷名称"></el-input>
       </el-form-item>
       <el-form-item prop="monthSize" label="适合月龄">
-        <el-input v-model="dynamicValidateForm.monthSize" placeholder="请输入适合几个的月婴儿/列子：1,类型Number/String"></el-input>
+        <el-input
+          v-model="dynamicValidateForm.monthSize"
+          placeholder="请输入适合几个的月婴儿/列子：1,类型Number/String"
+        ></el-input>
       </el-form-item>
       <el-form-item
         v-for="(domain, index) in dynamicValidateForm.domains"
         :label="'第' + (index+1) +'题'"
-        :key="index"
-      >
+        :key="index">
         <span class="Ttittle" style="width:auto;margin-right: .2rem;">题目名称</span>
         <el-input
           class="inputSelect"
@@ -44,6 +45,13 @@
           <el-option label="3" value="3"></el-option>
           <el-option label="4" value="4"></el-option>
         </el-select>
+        <span class="Ttittle" style="width:auto;margin-right: .2rem;margin-left: .2rem;">模块类型</span>
+        <el-input
+          class="inputSelect"
+          style="width:20%;"
+          v-model="domain.modular"
+          placeholder="请输入模块类型number"
+        ></el-input>
         <template>
           <span class="Ttittle" style="clear: both;">{{ domain.options[0].option }}</span>
           <el-input
@@ -113,10 +121,39 @@
         <p style="color: #E6A23C;text-align: left;">*分数请大到小一次填写</p>
       </el-form-item>
       <el-form-item
+        v-for="(domain, index) in dynamicValidateForm.modulars"
+        :key="'s'+index">      
+        <span class="Ttittle1" style="clear: both;">木块名称</span>
+        <el-input
+          class="inputSelect3"
+          v-model="domain.modularName"
+          placeholder="请输入模块名称"
+        ></el-input>
+        <span class="Ttittle1">模块归属类型</span>
+        <el-input
+          class="inputSelect3"
+          v-model="domain.modularType"
+          placeholder="请输入模块归属类型"
+        ></el-input> 
+        <span class="Ttittle1">>=</span>  
+        <el-input class="inputSelect3" v-model="domain.num" placeholder="请输入分数"></el-input>
+        <span class="Ttittle1">提示文字</span>
+        <el-input
+          class="inputSelect3"
+          v-model="domain.text"
+          placeholder="请输入提示文字"
+        ></el-input>
+        <el-button
+          type="danger"
+          plain
+          @click.prevent="removeDomain1(domain)"
+          style="float: right;"
+        >删除</el-button>
+      </el-form-item>
+      <el-form-item
         v-for="(domain, index) in dynamicValidateForm.fractionDetermine"
         label="大于>="
-        :key="'index'+index"
-      >
+        :key="'index'+index">
         <el-input class="inputSelect1" v-model="domain.num" placeholder="请输入分数"></el-input>
         <span class="Ttittle1">提示文字</span>
         <el-input
@@ -131,8 +168,9 @@
           @click.prevent="removeDomain1(domain)"
           style="float: right;"
         >删除</el-button>
-      </el-form-item>    
+      </el-form-item>
       <el-form-item>
+        <el-button @click="addFractionDetermine">增加模块分数判定</el-button>
         <el-button @click="addFractionDetermine">增加分数判定</el-button>
         <el-button @click="addDomain">新增题目</el-button>
         <el-button type="primary" @click="submitForm">提交</el-button>
@@ -147,21 +185,36 @@ export default {
   data() {
     return {
       testPaperId: "", // 试卷id
-      dynamicValidateForm: {// 试卷内容
+      dynamicValidateForm: {
+        // 试卷内容
         testPaperNanme: "", // 试卷名称
-        monthSize:"", // 适合几个月婴儿
+        monthSize: "", // 适合几个月婴儿
+        // 总分数判定
         fractionDetermine: [
-          // 分数判定
           {
             num: "",
             text: ""
           }
         ],
+        // 模块分数判定
+        modulars: [
+          {
+            modularName: "", // 模块名称
+            modularType: "",
+            modularDetermine: [
+              {             
+                num: "",
+                text: ""
+              }
+            ]
+          }
+        ],
+        // 选项
         domains: [
-          // 选项
           {
             subjectNmane: "", // 题目名称
             optionNum: "4", // 选项数量
+            modular: "", // 模块
             options: [
               // 选项
               {
@@ -259,7 +312,7 @@ export default {
         this.dynamicValidateForm.domains.splice(index, 1);
       }
     },
-    // 删除 - 分数判定
+    // 删除 - 总分数判定
     removeDomain1(item) {
       var index = this.dynamicValidateForm.fractionDetermine.indexOf(item);
       if (index !== -1) {
@@ -271,6 +324,7 @@ export default {
       this.dynamicValidateForm.domains.push({
         subjectNmane: "",
         optionNum: "4",
+        modular: "",
         options: [
           {
             option: "A",
@@ -295,7 +349,7 @@ export default {
         ]
       });
     },
-    // 添加 - 分数判定
+    // 添加 - 总分数判定
     addFractionDetermine() {
       this.dynamicValidateForm.fractionDetermine.push({
         num: "",
@@ -361,6 +415,11 @@ export default {
   .inputSelect2 {
     float: left;
     margin-bottom: 15px;
+  }
+  .inputSelect3 {
+    float: left;
+    margin-bottom: 15px;
+    width: 30%;
   }
 }
 </style>
